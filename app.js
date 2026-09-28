@@ -507,12 +507,14 @@
     // 5. Jubilej 55 i godine 1971. - 2026.
     gsap.set(DOM.jubileeNum, {
       yPercent: 115,
+      y: 0,
       opacity: 0,
       display: 'block'
     });
 
     gsap.set(DOM.jubileeYears, {
       yPercent: 115,
+      y: 0,
       opacity: 0,
       display: 'block'
     });
@@ -819,6 +821,7 @@
     // 1. Broj 55 izranja točno ~0.50 s nakon smirenja znaka (T0 + 3.86s)
     tl.to(DOM.jubileeNum, {
       yPercent: 0,
+      y: 0,
       opacity: 1,
       duration: 0.80,
       ease: 'power3.out'
@@ -827,6 +830,7 @@
     // 2. Godine 1971. – 2026. (T0 + 4.06s)
     tl.to(DOM.jubileeYears, {
       yPercent: 0,
+      y: 0,
       opacity: 1,
       duration: 0.70,
       ease: 'power3.out'

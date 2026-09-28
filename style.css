@@ -303,7 +303,6 @@ body {
   color: var(--color-ink);
   padding-right: 6px;
   opacity: 0;
-  transform: translateY(115%);
   will-change: transform, opacity;
 }
 
@@ -315,7 +314,6 @@ body {
   color: var(--color-ink);
   padding-bottom: 0.3cqi;
   opacity: 0;
-  transform: translateY(115%);
   will-change: transform, opacity;
 }
 
@@ -330,7 +328,6 @@ body {
   color: var(--color-ink);
   text-transform: uppercase;
   opacity: 0;
-  transform: translateY(12px);
   will-change: transform, opacity;
 }
 
@@ -379,7 +376,6 @@ body {
 .slogan-text span {
   display: block;
   opacity: 0;
-  transform: translateY(40%);
   will-change: transform, opacity;
 }
 
@@ -390,7 +386,6 @@ body {
   height: 1.8px;
   background-color: var(--color-ink);
   opacity: 0;
-  transform: scaleX(0);
   transform-origin: left center;
   will-change: transform, opacity;
   margin: 0;
@@ -427,7 +422,6 @@ body {
   fill: var(--color-ink);
   display: block;
   opacity: 0;
-  transform: translateY(8px);
   will-change: transform, opacity;
 }
 
@@ -445,7 +439,6 @@ body {
   display: flex;
   flex-direction: column;
   opacity: 0;
-  transform: translateY(10px);
   will-change: transform, opacity;
 }
 
@@ -533,7 +526,6 @@ body {
   transform-origin: 50% 50%;
   will-change: transform, opacity;
   opacity: 0;
-  transform: scale(0);
 }
 
 /* --------------------------------------------------------------------------
