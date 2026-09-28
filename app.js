@@ -421,10 +421,6 @@
     crossRing: document.getElementById('cross-ring'),
     seedDot: document.getElementById('seed-dot'),
     fragmentsLayer: document.getElementById('fragments-layer'),
-    centralWrap: document.getElementById('central-symbol-wrap'),
-    pieceLeft: document.getElementById('piece-left'),
-    pieceCenter: document.getElementById('piece-center'),
-    pieceRight: document.getElementById('piece-right'),
     watermarkZone: document.getElementById('el-watermark-zone'),
     wmLeft: document.getElementById('wm-left'),
     wmCenter: document.getElementById('wm-center'),
@@ -580,14 +576,7 @@
       });
     });
 
-    // 12. Centralni crni znak - sakriven
-    gsap.set(DOM.centralWrap, {
-      display: 'none',
-      opacity: 0,
-      visibility: 'hidden'
-    });
-
-    // 13. Vodeni žig - pripremi dijelove za rođenje iz singularnosti
+    // 12. Vodeni žig - pripremi dijelove za rođenje iz singularnosti
     gsap.set(DOM.watermarkZone, {
       opacity: 1,
       visibility: 'visible'
@@ -1004,6 +993,16 @@
       hasStarted = true;
       initializeAndPlay(false);
     }
+  }
+
+  // Instant initial setup to guarantee zero-state before paint
+  try {
+    const immediateSeed = getUtcSeed();
+    activeConfig = createConfiguration(immediateSeed);
+    activeFragmentElements = createFragments(activeConfig);
+    setInitialState(activeConfig, activeFragmentElements);
+  } catch (err) {
+    console.error('Init zero-state err:', err);
   }
 
   onPageFullyReady(() => {

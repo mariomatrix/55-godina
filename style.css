@@ -302,6 +302,9 @@ body {
   letter-spacing: -0.05em;
   color: var(--color-ink);
   padding-right: 6px;
+  opacity: 0;
+  transform: translateY(115%);
+  will-change: transform, opacity;
 }
 
 .jubilee-years {
@@ -311,6 +314,9 @@ body {
   letter-spacing: 0.02em;
   color: var(--color-ink);
   padding-bottom: 0.3cqi;
+  opacity: 0;
+  transform: translateY(115%);
+  will-change: transform, opacity;
 }
 
 /* Tekst čestitke (Y: 22.13% do 33.04%, X: 7.89%) */
@@ -323,6 +329,9 @@ body {
   letter-spacing: -0.015em;
   color: var(--color-ink);
   text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(12px);
+  will-change: transform, opacity;
 }
 
 /* Zona 2: Središnji vodeni žig (Y: 37.22% do 53.56%, X: 4.58% do 94.85%) */
@@ -369,6 +378,9 @@ body {
 
 .slogan-text span {
   display: block;
+  opacity: 0;
+  transform: translateY(40%);
+  will-change: transform, opacity;
 }
 
 /* Separator linije 1 i 2 (Y: 71.35% i 86.84%) */
@@ -377,7 +389,10 @@ body {
   border: none;
   height: 1.8px;
   background-color: var(--color-ink);
-  opacity: 0.95;
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform, opacity;
   margin: 0;
   z-index: 5;
 }
@@ -411,6 +426,9 @@ body {
   height: 100%;
   fill: var(--color-ink);
   display: block;
+  opacity: 0;
+  transform: translateY(8px);
+  will-change: transform, opacity;
 }
 
 #logo-text {
@@ -426,6 +444,9 @@ body {
   z-index: 5;
   display: flex;
   flex-direction: column;
+  opacity: 0;
+  transform: translateY(10px);
+  will-change: transform, opacity;
 }
 
 .dekan-title {
@@ -506,33 +527,13 @@ body {
   backface-visibility: hidden;
 }
 
-/* Central assembling symbol (Exact official brand vector) */
-.central-symbol-wrap {
-  position: absolute;
-  top: 48%;
-  left: 50%;
-  width: clamp(240px, 62%, 360px);
-  aspect-ratio: 260.42 / 67.13;
-  transform: translate(-50%, -50%);
-  z-index: 20;
-  will-change: transform, opacity;
-  pointer-events: none;
-  overflow: visible;
-}
-
-.central-symbol-svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  fill: var(--color-ink);
-  overflow: visible;
-}
-
-#piece-left, #piece-center, #piece-right,
+/* Središnji vodeni žig - inicijalno sakriven prije formiranja iz singularnosti */
 #wm-left, #wm-center, #wm-right {
   transform-box: fill-box;
   transform-origin: 50% 50%;
   will-change: transform, opacity;
+  opacity: 0;
+  transform: scale(0);
 }
 
 /* --------------------------------------------------------------------------
