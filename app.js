@@ -4,10 +4,14 @@
  * 
  * Implementacija:
  * - Podloga: Tamni tehnički ugljen (#12141a) s koordinatnom mrežom
- * - Početak (0.00s - 0.20s): Optički nitni križ & reticle (HUD) na točki znaka (50% X, 45.4% Y)
- * - Singularnost / Big Bang (0.22s): Obojana ploha pozadine silovito eruptira kroz
+ * - Inicijalna suspenzija (START_DELAY = 1.00s):
+ *   Garantirano čekanje učitavanja svih fontova i resursa (onPageFullyReady)
+ *   + dvostruki requestAnimationFrame kako bi i najsporija računala/mobiteli
+ *   prije početka animacije u potpunosti naslikali početni kadar (nema preskakanja).
+ * - Optički nitni križ & reticle (HUD) na točki znaka (50% X, 45.4% Y)
+ * - Singularnost / Big Bang: Obojana ploha pozadine silovito eruptira kroz
  *   generativno odabranu geometriju (Arhitektonski romb 45°, Kružni iris, Pravokutnik ili Tektonski rasjed)
- * - 55-70 arhitektonskih geometrijskih elemenata eksplodira u prostor s bogatim kontrastom i mjerilima
+ * - 58-70 arhitektonskih geometrijskih elemenata eksplodira u prostor s bogatim kontrastom i mjerilima
  * - Formiranje vodenog žiga s točno 0,00 px razmaka (Zero Gap)
  * - Završni kadrovi: Jubilej 55, godine 1971. – 2026., tekst čestitke, horizontalne crte,
  *   službeni institucionalni logotip s tekstom, slogan i dekanov potpis.
@@ -15,6 +19,14 @@
 
 (function () {
   'use strict';
+
+  // Inicijalna pauza (1 sekunda za stabilno učitavanje na svim uređajima)
+  const START_DELAY = 1.0;
+
+  // Spriječi GSAP da preskače sekunde ako je CPU kratkotrajno zauzet inicijalnim crtanjem
+  if (window.gsap && gsap.ticker) {
+    gsap.ticker.lagSmoothing(1000, 16);
+  }
 
   // =========================================================================
   // 1. DEFINICIJA SLUŽBENIH PALETA I RESURSA
@@ -335,8 +347,8 @@
       }
 
       const rotationBurst = (random() * 540 - 270);
-      const delayBurst = 0.22 + (random() * 0.14);
-      const dissolveDelay = 1.70 + (i * 0.015) + (random() * 0.10);
+      const delayBurst = START_DELAY + 0.22 + (random() * 0.14);
+      const dissolveDelay = START_DELAY + 1.70 + (i * 0.015) + (random() * 0.10);
 
       fragments.push({
         id: `frag-${i}`,
@@ -360,24 +372,24 @@
         burstY: -90 - random() * 120,
         scaleBurst: 2.1 + random() * 0.7,
         rotationBurst: -45 + random() * 25,
-        delayBurst: 0.23 + random() * 0.05,
-        convDelay: 1.90 + random() * 0.08
+        delayBurst: START_DELAY + 0.23 + random() * 0.05,
+        convDelay: START_DELAY + 1.90 + random() * 0.08
       },
       center: {
         burstX: -40 + random() * 80,
         burstY: -190 - random() * 120,
         scaleBurst: 2.2 + random() * 0.8,
         rotationBurst: 15 + random() * 35,
-        delayBurst: 0.25 + random() * 0.05,
-        convDelay: 1.93 + random() * 0.08
+        delayBurst: START_DELAY + 0.25 + random() * 0.05,
+        convDelay: START_DELAY + 1.93 + random() * 0.08
       },
       right: {
         burstX: 190 + random() * 130,
         burstY: 90 + random() * 120,
         scaleBurst: 2.0 + random() * 0.7,
         rotationBurst: -45 + random() * 30,
-        delayBurst: 0.27 + random() * 0.05,
-        convDelay: 1.96 + random() * 0.08
+        delayBurst: START_DELAY + 0.27 + random() * 0.05,
+        convDelay: START_DELAY + 1.96 + random() * 0.08
       }
     };
 
@@ -475,7 +487,7 @@
     DOM.rule1.style.backgroundColor = config.palette.ink;
     DOM.rule2.style.backgroundColor = config.palette.ink;
 
-    // Resetiraj karticu na poziciju
+    // Resetiraj karticu na nultu poziciju
     gsap.set(DOM.card, { x: 0, y: 0, scale: 1 });
 
     // 2. Početno stanje pozadine: Tamni tehnički ugljen je vidljiv, obojana ploha je točkica
@@ -555,7 +567,7 @@
       display: 'block'
     });
 
-    // 11. Sekundarni leteći oblici (55-70 elemenata)
+    // 11. Sekundarni leteći oblici (58-70 elemenata)
     fragmentElements.forEach((el) => {
       gsap.set(el, {
         x: 0,
@@ -592,7 +604,7 @@
   }
 
   // =========================================================================
-  // 6. IZGRADNJA TIMELINEA: KOMPLETNA GENERATIVNA ANIMACIJA (0.00 – 6.00s)
+  // 6. IZGRADNJA TIMELINEA: KOMPLETNA GENERATIVNA ANIMACIJA
   // "ZNANJE KOJE MIJENJA PROSTOR"
   // =========================================================================
 
@@ -603,9 +615,10 @@
     });
 
     const isIris = (config.geom.id === 'iris');
+    const T0 = START_DELAY; // Inicijalna suspenzija (1.00s)
 
     // -----------------------------------------------------------------------
-    // FAZA 1: OPTIČKI NITNI KRIŽ & RETICLE HUD (0.00 – 0.22s)
+    // FAZA 1: OPTIČKI NITNI KRIŽ & RETICLE HUD (T0 + 0.00s – T0 + 0.22s)
     // Podloga je tamni tehnički ugljen. U točki znaka fokusira se nitni križ.
     // -----------------------------------------------------------------------
     tl.to(DOM.crossRing, {
@@ -614,28 +627,27 @@
       rotation: 90,
       duration: 0.18,
       ease: 'power2.out'
-    }, 0.02)
+    }, T0 + 0.02)
     .to([DOM.crossH, DOM.crossV], {
       scale: 1,
       opacity: 0.95,
       duration: 0.15,
       ease: 'power3.out'
-    }, 0.04)
+    }, T0 + 0.04)
     .to(DOM.seedDot, {
       scale: 1,
       duration: 0.16,
       ease: 'back.out(3)',
       boxShadow: `0 0 28px ${config.palette.bg}`
-    }, 0.06);
+    }, T0 + 0.06);
 
     // -----------------------------------------------------------------------
-    // FAZA 2: "ZNANJE KOJE MIJENJA PROSTOR" - DETONACIJA & BIG BANG (0.22 – 1.80s)
-    // U 0.22s:
+    // FAZA 2: "ZNANJE KOJE MIJENJA PROSTOR" - DETONACIJA & BIG BANG (T0 + 0.22s)
     // 1. HUD munjevito bljesne i raspline se
     // 2. Taktilni mikro-trzaj kartice (camera recoil)
     // 3. Obojana ploha pozadine munjevito preplavi čestitku
     // 4. Kinetički vektorski udarni valovi pucaju prema rubovima
-    // 5. 55-70 monumentalnih i modularnih elemenata eruptira prema van
+    // 5. 58-70 monumentalnih i modularnih elemenata eruptira prema van
     // -----------------------------------------------------------------------
 
     // 1. HUD nestaje u bljesku
@@ -644,12 +656,12 @@
       scale: 2.2,
       duration: 0.12,
       ease: 'power2.in'
-    }, 0.20);
+    }, T0 + 0.20);
 
     // 2. Fizički mikroskopski trzaj kartice (recoil)
-    tl.to(DOM.card, { x: -2.5, y: 1.8, duration: 0.04, ease: 'none' }, 0.22)
-      .to(DOM.card, { x: 2.0, y: -1.2, duration: 0.04, ease: 'none' }, 0.26)
-      .to(DOM.card, { x: 0, y: 0, duration: 0.16, ease: 'power2.out' }, 0.30);
+    tl.to(DOM.card, { x: -2.5, y: 1.8, duration: 0.04, ease: 'none' }, T0 + 0.22)
+      .to(DOM.card, { x: 2.0, y: -1.2, duration: 0.04, ease: 'none' }, T0 + 0.26)
+      .to(DOM.card, { x: 0, y: 0, duration: 0.16, ease: 'power2.out' }, T0 + 0.30);
 
     // 3. Generativna ekspanzija obojane pozadine
     const bgProgress = { val: 0 };
@@ -665,7 +677,7 @@
           DOM.floodPlane.style.clipPath = getBackgroundClipPath(config.geom.id, bgProgress.val);
         }
       }
-    }, 0.22);
+    }, T0 + 0.22);
 
     // 4. Stvaranje 4 dinamička udarna vala (shockwave contours)
     const shockwavePaths = [];
@@ -679,7 +691,7 @@
       DOM.shockwavesGroup.appendChild(p);
       shockwavePaths.push(p);
 
-      const delayW = 0.22 + w * 0.045;
+      const delayW = T0 + 0.22 + w * 0.045;
       const waveObj = { r: 0 };
       const maxR = 960 + w * 140;
 
@@ -704,7 +716,7 @@
       tl.to(p, { opacity: 0, duration: 0.32, ease: 'power2.in' }, delayW + 0.18);
     }
 
-    // 5. Erupcija 55-70 elemenata iz središta singularnosti
+    // 5. Erupcija 58-70 elemenata iz središta singularnosti
     fragmentElements.forEach((el, index) => {
       const frag = config.fragments[index];
       tl.to(el, {
@@ -768,7 +780,7 @@
     }, config.wmPieces.right.delayBurst);
 
     // -----------------------------------------------------------------------
-    // FAZA 3: KRISTALIZACIJA VODENOG ŽIGA & RED (1.80 – 3.36s)
+    // FAZA 3: KRISTALIZACIJA VODENOG ŽIGA & RED (T0 + 1.80 – T0 + 3.36s)
     // -----------------------------------------------------------------------
     // 1. Raspršeni oblici usporavaju i nestaju u obojanoj podlozi
     fragmentElements.forEach((el, index) => {
@@ -778,7 +790,7 @@
         opacity: 0,
         duration: 0.95,
         ease: 'power2.inOut'
-      }, frag ? frag.dissolveDelay : (1.80 + (index * 0.018)));
+      }, frag ? frag.dissolveDelay : (T0 + 1.80 + (index * 0.018)));
     });
 
     // 2. Tri plohe vodenog žiga precizno dosjedaju u točan znak (Zero Gap)
@@ -813,50 +825,50 @@
     }, config.wmPieces.right.convDelay);
 
     // -----------------------------------------------------------------------
-    // FAZA 4: TEKTONSKA KOREOGRAFIJA JUBILEJA I ZAVRŠNOG KADRA (3.86 – 6.00s)
+    // FAZA 4: TEKTONSKA KOREOGRAFIJA JUBILEJA I ZAVRŠNOG KADRA (T0 + 3.86 – T0 + 6.00s)
     // -----------------------------------------------------------------------
-    // 1. Broj 55 izranja točno ~0.50 s nakon smirenja znaka (3.86s)
+    // 1. Broj 55 izranja točno ~0.50 s nakon smirenja znaka (T0 + 3.86s)
     tl.to(DOM.jubileeNum, {
       yPercent: 0,
       opacity: 1,
       duration: 0.80,
       ease: 'power3.out'
-    }, 3.86);
+    }, T0 + 3.86);
 
-    // 2. Godine 1971. – 2026. (4.06s)
+    // 2. Godine 1971. – 2026. (T0 + 4.06s)
     tl.to(DOM.jubileeYears, {
       yPercent: 0,
       opacity: 1,
       duration: 0.70,
       ease: 'power3.out'
-    }, 4.06);
+    }, T0 + 4.06);
 
-    // 3. Tekst čestitke (4.25s)
+    // 3. Tekst čestitke (T0 + 4.25s)
     tl.to(DOM.greetingMsg, {
       y: 0,
       opacity: 1,
       duration: 0.55,
       ease: 'power3.out'
-    }, 4.25);
+    }, T0 + 4.25);
 
-    // 4. Horizontalne crte (4.60s)
+    // 4. Horizontalne crte (T0 + 4.60s)
     tl.to([DOM.rule1, DOM.rule2], {
       scaleX: 1,
       opacity: 0.95,
       duration: 0.45,
       stagger: 0.08,
       ease: 'power3.out'
-    }, 4.60);
+    }, T0 + 4.60);
 
-    // 5. Službeni znak sa tekstom (4.85s)
+    // 5. Službeni znak sa tekstom (T0 + 4.85s)
     tl.to(DOM.officialLogo, {
       opacity: 1,
       y: 0,
       duration: 0.50,
       ease: 'power3.out'
-    }, 4.85);
+    }, T0 + 4.85);
 
-    // 6. Slogan (5.20s)
+    // 6. Slogan (T0 + 5.20s)
     const sloganSpans = DOM.slogan.querySelectorAll('span');
     tl.to(sloganSpans, {
       yPercent: 0,
@@ -864,19 +876,19 @@
       duration: 0.45,
       stagger: 0.12,
       ease: 'power3.out'
-    }, 5.20);
+    }, T0 + 5.20);
 
-    // 7. Dekan potpis (5.55s)
+    // 7. Dekan potpis (T0 + 5.55s)
     tl.to([DOM.dekanTitle, DOM.dekanName], {
       y: 0,
       opacity: 1,
       duration: 0.45,
       stagger: 0.08,
       ease: 'power3.out'
-    }, 5.55);
+    }, T0 + 5.55);
 
-    // 8. Završetak točno u 6.00s – potpuna stabilnost i tišina
-    tl.set({}, {}, 6.00);
+    // 8. Završetak točno u T0 + 6.00s – potpuna stabilnost i tišina
+    tl.set({}, {}, T0 + 6.00);
 
     return tl;
   }
@@ -937,12 +949,66 @@
     replaySameTimeline();
   });
 
-  // Pouzdano pokretanje
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => initializeAndPlay(false));
-  } else {
-    initializeAndPlay(false);
+  // =========================================================================
+  // 8. POUZDANI STARTUP ZA SVE UREĐAJE (PAINT GATE & FONTS READY)
+  // =========================================================================
+
+  function onPageFullyReady(callback) {
+    const execute = () => {
+      // 1. Ako preglednik podržava Font Loading API, čekaj učitavanje webfontova
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          // 2. Dvostruki requestAnimationFrame garantira da je GPU naslikao prvi frame
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              callback();
+            });
+          });
+        }).catch(() => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              callback();
+            });
+          });
+        });
+      } else {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            callback();
+          });
+        });
+      }
+    };
+
+    if (document.readyState === 'complete') {
+      execute();
+    } else {
+      window.addEventListener('load', execute, { once: true });
+    }
   }
+
+  // Ako korisnik otvori stranicu u pozadinskom tabu, čekaj dok ne postane vidljiva
+  let hasStarted = false;
+  function startWhenVisible() {
+    if (hasStarted) return;
+    if (document.hidden) {
+      const onVisible = () => {
+        if (!document.hidden) {
+          document.removeEventListener('visibilitychange', onVisible);
+          hasStarted = true;
+          initializeAndPlay(false);
+        }
+      };
+      document.addEventListener('visibilitychange', onVisible);
+    } else {
+      hasStarted = true;
+      initializeAndPlay(false);
+    }
+  }
+
+  onPageFullyReady(() => {
+    startWhenVisible();
+  });
 
   window.seekTo = function(t) {
     if (activeTimeline) {
