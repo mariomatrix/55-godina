@@ -178,6 +178,66 @@
   // =========================================================================
   // 2. DETERMINISTIČKI PRNG (Mulberry32)
   // =========================================================================
+  // 2. SHUFFLE BAG RANDOMIZER (FISHER-YATES CIKLUS BEZ PONAVLJANJA)
+  // =========================================================================
+
+  const SHUFFLE_BAG_KEY = 'fgag_palette_shuffle_bag';
+  const LAST_PALETTE_KEY = 'fgag_last_palette_id';
+  let memoryBag = [];
+  let memoryLastId = null;
+
+  function getNextPaletteFromBag() {
+    let bag = [];
+    let lastId = null;
+
+    // 1. Pokušaj čitanja iz sessionStorage uz memorijski fallback
+    try {
+      const stored = sessionStorage.getItem(SHUFFLE_BAG_KEY);
+      if (stored) {
+        bag = JSON.parse(stored);
+      }
+      lastId = sessionStorage.getItem(LAST_PALETTE_KEY);
+    } catch (e) {
+      bag = memoryBag;
+      lastId = memoryLastId;
+    }
+
+    // 2. Ako je vrećica prazna ili neispravna, stvori novi promiješani krug (Fisher-Yates)
+    if (!Array.isArray(bag) || bag.length === 0) {
+      bag = OFFICIAL_PALETTES.map(p => p.id);
+      
+      for (let i = bag.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = bag[i];
+        bag[i] = bag[j];
+        bag[j] = temp;
+      }
+
+      // Ako je prva paleta u novom krugu jednaka zadnjoj iz prethodnog,
+      // zamijeni je s nekom drugom kako se ista boja NIKADA ne bi ponovila uzastopno!
+      if (bag.length > 1 && bag[0] === lastId) {
+        const swapIdx = 1 + Math.floor(Math.random() * (bag.length - 1));
+        const temp = bag[0];
+        bag[0] = bag[swapIdx];
+        bag[swapIdx] = temp;
+      }
+    }
+
+    // 3. Uzmi sljedeću paletu iz vrećice
+    const nextId = bag.shift();
+
+    // 4. Spremi stanje
+    try {
+      sessionStorage.setItem(SHUFFLE_BAG_KEY, JSON.stringify(bag));
+      sessionStorage.setItem(LAST_PALETTE_KEY, nextId);
+    } catch (e) {
+      memoryBag = bag;
+      memoryLastId = nextId;
+    }
+
+    const selected = OFFICIAL_PALETTES.find(p => p.id === nextId);
+    return selected || OFFICIAL_PALETTES[0];
+  }
 
   function createPrng(seed) {
     let s = seed >>> 0;
@@ -189,23 +249,15 @@
     };
   }
 
-  function getUtcSeed() {
+  function getFreshSeed() {
     const params = new URLSearchParams(window.location.search);
     const seedParam = params.get('seed');
     if (seedParam !== null && !isNaN(parseInt(seedParam, 10))) {
       return parseInt(seedParam, 10) >>> 0;
     }
-    const now = new Date();
-    return Math.floor(
-      Date.UTC(
-        now.getUTCFullYear(),
-        now.getUTCMonth(),
-        now.getUTCDate(),
-        now.getUTCHours(),
-        now.getUTCMinutes(),
-        now.getUTCSeconds()
-      ) / 1000
-    ) >>> 0;
+    const t = Date.now();
+    const entropy = Math.floor(Math.random() * 10000000);
+    return ((t ^ entropy) >>> 0);
   }
 
   function formatUtcDisplay(date, paletteName, modeName, geomName, seed) {
@@ -215,7 +267,7 @@
   }
 
   // =========================================================================
-  // 3. GENERATIVNA KONFIGURACIJA EKSPLOZIJE (ODREĐENA UTC SEEDOM)
+  // 3. GENERATIVNA KONFIGURACIJA EKSPLOZIJE (ODREĐENA SEEDOM I SHUFFLE BAGOM)
   // =========================================================================
 
   const EXPLOSION_MODES = [
@@ -227,19 +279,23 @@
     { id: 'asymmetric', name: 'Asimetrični fokus', desc: 'Ekscentrično žarište novih prostora' }
   ];
 
-  function createConfiguration(seed) {
+  function createConfiguration(seed, forcedPalette = null) {
     const random = createPrng(seed);
     const params = new URLSearchParams(window.location.search);
 
-    // 1. Odabir palete (ili URL parametar ?palette=)
+    // 1. Odabir palete: URL parametar ?palette=, fiksni seed ili Shuffle Bag
     const paletteParam = params.get('palette');
-    let palette = null;
-    if (paletteParam) {
+    const seedParam = params.get('seed');
+    let palette = forcedPalette || null;
+    if (!palette && paletteParam) {
       palette = OFFICIAL_PALETTES.find(p => p.id.toLowerCase() === paletteParam.toLowerCase());
     }
-    if (!palette) {
+    if (!palette && seedParam !== null) {
       const paletteIndex = Math.floor(random() * OFFICIAL_PALETTES.length);
       palette = OFFICIAL_PALETTES[paletteIndex];
+    }
+    if (!palette) {
+      palette = getNextPaletteFromBag();
     }
 
     // 2. Odabir geometrije ekspanzije pozadine (ili URL parametar ?geom=)
@@ -910,25 +966,28 @@
   let activeTimeline = null;
   let activeFragmentElements = [];
 
-  function initializeAndPlay(useCurrentSeed = false) {
+  function initializeAndPlay(reuseExisting = false) {
     if (activeTimeline) {
       activeTimeline.kill();
+      activeTimeline = null;
     }
 
-    const seed = useCurrentSeed && activeConfig ? activeConfig.seed : getUtcSeed();
-    const now = new Date();
+    if (!reuseExisting || !activeConfig) {
+      const seed = getFreshSeed();
+      activeConfig = createConfiguration(seed);
+      activeFragmentElements = createFragments(activeConfig);
+      setInitialState(activeConfig, activeFragmentElements);
+    }
 
-    activeConfig = createConfiguration(seed);
+    const now = new Date();
     DOM.seedBadge.textContent = formatUtcDisplay(
       now,
       activeConfig.palette.name,
       activeConfig.mode.name,
       activeConfig.geom.name,
-      seed
+      activeConfig.seed
     );
 
-    activeFragmentElements = createFragments(activeConfig);
-    setInitialState(activeConfig, activeFragmentElements);
     activeTimeline = buildTimeline(activeConfig, activeFragmentElements);
     activeTimeline.play(0);
 
@@ -942,20 +1001,35 @@
     }
   }
 
-  function replaySameTimeline() {
-    if (!activeConfig || !activeTimeline) {
-      initializeAndPlay(false);
-      return;
+  function playNewVariation() {
+    if (activeTimeline) {
+      activeTimeline.kill();
+      activeTimeline = null;
     }
 
-    activeTimeline.pause(0);
+    // Generiraj potpuno novi nasumični seed
+    const freshSeed = getFreshSeed();
+    // createConfiguration automatski vuče sljedeću paletu iz Shuffle Baga i novu nasumičnu dinamiku
+    activeConfig = createConfiguration(freshSeed);
+
+    const now = new Date();
+    DOM.seedBadge.textContent = formatUtcDisplay(
+      now,
+      activeConfig.palette.name,
+      activeConfig.mode.name,
+      activeConfig.geom.name,
+      freshSeed
+    );
+
+    activeFragmentElements = createFragments(activeConfig);
     setInitialState(activeConfig, activeFragmentElements);
-    activeTimeline.restart();
+    activeTimeline = buildTimeline(activeConfig, activeFragmentElements);
+    activeTimeline.play(0);
   }
 
   DOM.replayBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    replaySameTimeline();
+    playNewVariation();
   });
 
   // =========================================================================
@@ -1005,19 +1079,19 @@
         if (!document.hidden) {
           document.removeEventListener('visibilitychange', onVisible);
           hasStarted = true;
-          initializeAndPlay(false);
+          initializeAndPlay(true);
         }
       };
       document.addEventListener('visibilitychange', onVisible);
     } else {
       hasStarted = true;
-      initializeAndPlay(false);
+      initializeAndPlay(true);
     }
   }
 
   // Instant initial setup to guarantee zero-state before paint
   try {
-    const immediateSeed = getUtcSeed();
+    const immediateSeed = getFreshSeed();
     activeConfig = createConfiguration(immediateSeed);
     activeFragmentElements = createFragments(activeConfig);
     setInitialState(activeConfig, activeFragmentElements);
@@ -1039,6 +1113,10 @@
     if (activeTimeline) {
       activeTimeline.play();
     }
+  };
+
+  window.playNewVariation = function() {
+    playNewVariation();
   };
 
 })();
