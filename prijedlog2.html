@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prijedlog 2: Singularnost / Arhitektonski Big Bang</title>
+  <style>
+    @font-face {
+      font-family: 'FKGroteskMono';
+      src: url('FKGroteskMonoTrial-Regular.otf') format('opentype');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'FKGroteskMono';
+      src: url('FKGroteskMonoTrial-Medium.otf') format('opentype');
+      font-weight: 500;
+    }
+    @font-face {
+      font-family: 'FKGroteskMono';
+      src: url('FKGroteskMonoTrial-Bold.otf') format('opentype');
+      font-weight: 700;
+    }
+
+    :root {
+      --bg-dark: #0a0c10;
+      --card-neutral: #14171d;
+      --card-neutral-light: #e8e5de;
+      --accent: #ffd500;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: #e6edf3;
+      font-family: 'FKGroteskMono', monospace, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: 1.15rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #fff;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    p.subtitle {
+      font-size: 0.78rem;
+      color: #8b949e;
+      letter-spacing: 0.05em;
+    }
+
+    /* Container for the card */
+    .viewport {
+      position: relative;
+      perspective: 1200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Architectural greeting card proportion 1748 / 2485 */
+    .card {
+      position: relative;
+      width: min(88vw, 440px);
+      aspect-ratio: 1748 / 2485;
+      background: #15181f;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.07);
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    /* Neutral baseline background texture */
+    .card-base {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 65% 35%, #1e222b 0%, #111318 100%);
+      transition: background 0.3s ease;
+    }
+
+    /* Light paper alternative mode */
+    .card.light-base .card-base {
+      background: radial-gradient(circle at 65% 35%, #f4f1ea 0%, #ded9cf 100%);
+    }
+
+    /* Architectural grid overlay on neutral base */
+    .grid-lines {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 24px 24px;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .card.light-base .grid-lines {
+      background-image: 
+        linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+    }
+
+    /* SVG viewport for detonation & wavefronts */
+    .bang-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    /* The flood plane that fills the whole card */
+    .flood-plane {
+      position: absolute;
+      inset: 0;
+      background-color: var(--accent);
+      clip-path: polygon(65% 35%, 65% 35%, 65% 35%, 65% 35%);
+      will-change: clip-path, opacity;
+    }
+
+    /* Crosshairs & Singularity Core */
+    .singularity-hud {
+      position: absolute;
+      left: 65%;
+      top: 35%;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
+    .crosshair-line {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.4);
+    }
+    .crosshair-h {
+      top: 0;
+      left: -20px;
+      width: 40px;
+      height: 1px;
+    }
+    .crosshair-v {
+      top: -20px;
+      left: 0;
+      width: 1px;
+      height: 40px;
+    }
+    .crosshair-ring {
+      position: absolute;
+      top: -12px;
+      left: -12px;
+      width: 24px;
+      height: 24px;
+      border: 1px dashed rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+    }
+
+    .seed-dot {
+      position: absolute;
+      top: -6px;
+      left: -6px;
+      width: 12px;
+      height: 12px;
+      background-color: var(--accent);
+      transform: rotate(45deg) scale(0);
+      box-shadow: 0 0 16px var(--accent);
+    }
+
+    /* Blueprint coordinates text watermark on card */
+    .card-blueprint-info {
+      position: absolute;
+      bottom: 22px;
+      left: 24px;
+      right: 24px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    /* Floating control bar */
+    .controls-panel {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: min(92vw, 560px);
+      background: rgba(22, 26, 34, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 16px 20px;
+    }
+
+    .btn-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: #21262d;
+      color: #f0f6fc;
+      border: 1px solid #30363d;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-weight: 500;
+    }
+
+    button:hover {
+      background: #30363d;
+      border-color: #8b949e;
+      transform: translateY(-1px);
+    }
+
+    button.primary {
+      background: #ffd500;
+      color: #000;
+      border-color: #ffd500;
+      font-weight: 700;
+    }
+    button.primary:hover {
+      background: #ffdf33;
+      box-shadow: 0 0 12px rgba(255, 213, 0, 0.4);
+    }
+
+    .palette-chips {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .chip {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .chip:hover {
+      transform: scale(1.15);
+    }
+    .chip.active {
+      border-color: #fff;
+      transform: scale(1.2);
+    }
+
+    .options-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #8b949e;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    select {
+      background: #161b22;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-family: inherit;
+      font-size: 11px;
+    }
+  </style>
+  <script src="vendor/gsap.min.js"></script>
+</head>
+<body>
+
+  <header>
+    <h1>Prijedlog 2: Singularnost</h1>
+    <p class="subtitle">Arhitektonski Big Bang iz točke znaka &bull; Znanje koje mijenja prostor</p>
+  </header>
+
+  <div class="viewport">
+    <div class="card" id="card">
+      <div class="card-base" id="cardBase"></div>
+      <div class="grid-lines"></div>
+
+      <!-- Detonation Wavefronts (Vector Layers) -->
+      <svg class="bang-svg" id="bangSvg" viewBox="0 0 1000 1422" preserveAspectRatio="none">
+        <defs>
+          <!-- Radial gradient filter for glow -->
+          <radialGradient id="blastGrad" cx="65%" cy="35%" r="70%">
+            <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.8" />
+            <stop offset="50%" stop-color="var(--accent)" stop-opacity="0.2" />
+            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+
+        <!-- Shockwave echoes (expanding geometric contours) -->
+        <g id="shockwavesGroup"></g>
+      </svg>
+
+      <!-- The Main Solid Color Flood Plane -->
+      <div class="flood-plane" id="floodPlane"></div>
+
+      <!-- Hud Reticle / Crosshair at the Singularity Focus -->
+      <div class="singularity-hud" id="singularityHud">
+        <div class="crosshair-line crosshair-h" id="crossH"></div>
+        <div class="crosshair-line crosshair-v" id="crossV"></div>
+        <div class="crosshair-ring" id="crossRing"></div>
+        <div class="seed-dot" id="seedDot"></div>
+      </div>
+
+      <!-- Subtle architectural corner metadata -->
+      <div class="card-blueprint-info">
+        <span>GENESIS: P01_SINGULARITY</span>
+        <span>COORD: 65%X / 35%Y</span>
+        <span>FGAG 1971-2026</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls-panel">
+    <div class="btn-row">
+      <button class="primary" id="btnReplay">&#9654; POKRENI DETONACIJU</button>
+      <button id="btnSlow">USPОРЕНО (0.25x)</button>
+      <button id="btnToggleBase">PROMIJENI PODLOGU (Tamna/Svijetla)</button>
+    </div>
+
+    <div class="btn-row" style="margin-top: 4px;">
+      <span style="font-size: 11px; color: #8b949e; margin-right: 6px;">Paleta:</span>
+      <div class="palette-chips" id="paletteChips"></div>
+    </div>
+
+    <div class="options-row">
+      <label>
+        Geometrija ekspanzije:
+        <select id="selGeom">
+          <option value="diamond">Arhitektonski romb (45° kut znaka)</option>
+          <option value="iris">Kružni geodetski izo-val (Iris)</option>
+          <option value="rect">Ortogonalni modularni pravokutnik</option>
+          <option value="fracture">Dijagonalni tektonski rasjed</option>
+        </select>
+      </label>
+      <span id="timingStatus">Trajanje: 0.70s</span>
+    </div>
+  </div>
+
+  <script>
+    // Palettes matching FGAG brand standards
+    const PALETTES = [
+      { id: 'P01', name: 'Jubilejska žuta', color: '#ffd500', isDark: false },
+      { id: 'P02', name: 'Crna / ugljen', color: '#16181d', isDark: true },
+      { id: 'P03', name: 'Crvena', color: '#e63946', isDark: true },
+      { id: 'P04', name: 'Zelena', color: '#2a9d8f', isDark: true },
+      { id: 'P05', name: 'Magenta', color: '#d81159', isDark: true },
+      { id: 'P06', name: 'Svijetloplava', color: '#4cc9f0', isDark: false },
+      { id: 'P07', name: 'Navy plava', color: '#1d3557', isDark: true }
+    ];
+
+    let currentPalette = PALETTES[0];
+    let timeScale = 1.0;
+    let mainTl = null;
+
+    const card = document.getElementById('card');
+    const floodPlane = document.getElementById('floodPlane');
+    const singularityHud = document.getElementById('singularityHud');
+    const crossH = document.getElementById('crossH');
+    const crossV = document.getElementById('crossV');
+    const crossRing = document.getElementById('crossRing');
+    const seedDot = document.getElementById('seedDot');
+    const shockwavesGroup = document.getElementById('shockwavesGroup');
+    const selGeom = document.getElementById('selGeom');
+
+    // Build palette selector chips
+    const chipsContainer = document.getElementById('paletteChips');
+    PALETTES.forEach((p, idx) => {
+      const chip = document.createElement('div');
+      chip.className = 'chip' + (idx === 0 ? ' active' : '');
+      chip.style.backgroundColor = p.color;
+      chip.title = `${p.id}: ${p.name}`;
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        setPalette(p);
+      });
+      chipsContainer.appendChild(chip);
+    });
+
+    function setPalette(p) {
+      currentPalette = p;
+      document.documentElement.style.setProperty('--accent', p.color);
+      playBang();
+    }
+
+    // Toggle baseline card theme (dark vs technical light)
+    document.getElementById('btnToggleBase').addEventListener('click', () => {
+      card.classList.toggle('light-base');
+      playBang();
+    });
+
+    // Slow motion toggle
+    const btnSlow = document.getElementById('btnSlow');
+    btnSlow.addEventListener('click', () => {
+      if (timeScale === 1.0) {
+        timeScale = 0.25;
+        btnSlow.textContent = 'NORMALNA BRZINA (1.0x)';
+        btnSlow.style.borderColor = '#ffd500';
+      } else {
+        timeScale = 1.0;
+        btnSlow.textContent = 'USPORENO (0.25x)';
+        btnSlow.style.borderColor = '#30363d';
+      }
+      playBang();
+    });
+
+    selGeom.addEventListener('change', () => playBang());
+    document.getElementById('btnReplay').addEventListener('click', () => playBang());
+
+    // Generate polygonal clip-path coordinates for expansion
+    // Origin is at 65% X, 35% Y
+    const OX = 65;
+    const OY = 35;
+
+    function getClipPath(geom, progress) {
+      // progress from 0 (point) to 1 (full screen cover)
+      if (progress <= 0) {
+        return `polygon(${OX}% ${OY}%, ${OX}% ${OY}%, ${OX}% ${OY}%, ${OX}% ${OY}%)`;
+      }
+
+      const p = Math.max(0, Math.min(1, progress));
+
+      if (geom === 'diamond') {
+        // Rhombus expansion at 45°
+        // Max radius to cover all 4 corners from (65, 35) is ~120%
+        const r = p * 125;
+        // 4 points of diamond: Top, Right, Bottom, Left
+        const top = `${OX}% ${OY - r * 1.42}%`;
+        const right = `${OX + r}% ${OY}%`;
+        const bottom = `${OX}% ${OY + r * 1.42}%`;
+        const left = `${OX - r}% ${OY}%`;
+        return `polygon(${top}, ${right}, ${bottom}, ${left})`;
+      } 
+      else if (geom === 'iris') {
+        // Circle iris via circle() or 16-point polygon
+        const r = p * 135;
+        return `circle(${r}% at ${OX}% ${OY}%)`;
+      }
+      else if (geom === 'rect') {
+        // Modular bounding box growing outward
+        const rx = p * 105;
+        const ry = p * 105;
+        const l = Math.max(0, OX - rx);
+        const r = Math.min(100, OX + rx);
+        const t = Math.max(0, OY - ry);
+        const b = Math.min(100, OY + ry);
+        return `polygon(${l}% ${t}%, ${r}% ${t}%, ${r}% ${b}%, ${l}% ${b}%)`;
+      }
+      else {
+        // Fracture: diagonal shear slash
+        const r = p * 140;
+        const p1 = `${OX - r * 1.2}% ${OY - r * 0.8}%`;
+        const p2 = `${OX + r * 1.5}% ${OY - r * 0.2}%`;
+        const p3 = `${OX + r * 0.8}% ${OY + r * 1.4}%`;
+        const p4 = `${OX - r * 1.5}% ${OY + r * 0.4}%`;
+        return `polygon(${p1}, ${p2}, ${p3}, ${p4})`;
+      }
+    }
+
+    function playBang() {
+      if (mainTl) mainTl.kill();
+
+      const geom = selGeom.value;
+      const isIris = (geom === 'iris');
+
+      // Clear dynamic SVG shockwaves
+      shockwavesGroup.innerHTML = '';
+
+      // Reset card transform recoil
+      gsap.set(card, { x: 0, y: 0, scale: 1 });
+
+      // Build 3 concentric SVG shockwave paths for visual kinetic shock
+      const shockwaveEls = [];
+      for (let i = 0; i < 4; i++) {
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', currentPalette.color);
+        path.setAttribute('stroke-width', (2.5 - i * 0.5) + 'px');
+        path.setAttribute('stroke-dasharray', i % 2 === 1 ? '6 4' : 'none');
+        path.setAttribute('opacity', '0');
+        shockwavesGroup.appendChild(path);
+        shockwaveEls.push(path);
+      }
+
+      // Initial state
+      if (isIris) {
+        gsap.set(floodPlane, { clipPath: `circle(0% at ${OX}% ${OY}%)`, opacity: 1 });
+      } else {
+        gsap.set(floodPlane, { clipPath: getClipPath(geom, 0), opacity: 1 });
+      }
+
+      gsap.set(seedDot, { scale: 0, opacity: 1, rotation: 45 });
+      gsap.set([crossH, crossV], { scale: 0, opacity: 0 });
+      gsap.set(crossRing, { scale: 0.3, opacity: 0 });
+
+      mainTl = gsap.timeline({ timeScale: timeScale });
+
+      // PHASE 1 (0.00s - 0.20s): HUD Targeting & Singularity Condensation
+      mainTl
+        .to(crossRing, {
+          scale: 1,
+          opacity: 0.6,
+          duration: 0.18,
+          ease: 'power2.out'
+        }, 0.0)
+        .to([crossH, crossV], {
+          scale: 1,
+          opacity: 0.8,
+          duration: 0.15,
+          ease: 'power3.out'
+        }, 0.03)
+        .to(seedDot, {
+          scale: 1,
+          duration: 0.16,
+          ease: 'back.out(3)',
+          boxShadow: `0 0 25px ${currentPalette.color}`
+        }, 0.06);
+
+      // PHASE 2 (0.20s): THE DETONATION (BIG BANG EXPLOSION)
+      // Object for clip-path progress tween
+      const progressObj = { val: 0 };
+
+      mainTl
+        // 1. HUD disappears in the flash
+        .to(singularityHud, {
+          opacity: 0,
+          scale: 1.8,
+          duration: 0.12,
+          ease: 'power2.in'
+        }, 0.20)
+
+        // 2. Card micro-recoil / tactile camera shake
+        .to(card, {
+          x: -2.5,
+          y: 2,
+          duration: 0.04,
+          ease: 'none'
+        }, 0.20)
+        .to(card, {
+          x: 2,
+          y: -1.5,
+          duration: 0.04,
+          ease: 'none'
+        }, 0.24)
+        .to(card, {
+          x: 0,
+          y: 0,
+          duration: 0.18,
+          ease: 'power2.out'
+        }, 0.28)
+
+        // 3. Flood plane expanding violently
+        .to(progressObj, {
+          val: 1,
+          duration: 0.48,
+          ease: 'expo.out', // Extremely sharp explosive start, smooth architectural settle
+          onUpdate: () => {
+            if (isIris) {
+              const r = progressObj.val * 135;
+              floodPlane.style.clipPath = `circle(${r}% at ${OX}% ${OY}%)`;
+            } else {
+              floodPlane.style.clipPath = getClipPath(geom, progressObj.val);
+            }
+          }
+        }, 0.20);
+
+      // 4. Kinetic SVG shockwave ripples firing outward
+      shockwaveEls.forEach((el, index) => {
+        const delay = 0.20 + index * 0.045;
+        const waveObj = { r: 0 };
+        const maxR = 900 + index * 120;
+
+        mainTl.to(el, { opacity: 0.85 - index * 0.18, duration: 0.05 }, delay);
+
+        mainTl.to(waveObj, {
+          r: maxR,
+          duration: 0.52,
+          ease: 'power3.out',
+          onUpdate: () => {
+            const rad = waveObj.r;
+            const cx = 650;
+            const cy = 1422 * 0.35;
+            if (geom === 'diamond') {
+              // Rhombus path
+              const d = `M ${cx} ${cy - rad * 1.3} L ${cx + rad} ${cy} L ${cx} ${cy + rad * 1.3} L ${cx - rad} ${cy} Z`;
+              el.setAttribute('d', d);
+            } else if (geom === 'rect') {
+              const d = `M ${cx - rad} ${cy - rad} L ${cx + rad} ${cy - rad} L ${cx + rad} ${cy + rad} L ${cx - rad} ${cy + rad} Z`;
+              el.setAttribute('d', d);
+            } else {
+              // Circle iris wave
+              const d = `M ${cx - rad},${cy} a ${rad},${rad} 0 1,0 ${rad * 2},0 a ${rad},${rad} 0 1,0 -${rad * 2},0`;
+              el.setAttribute('d', d);
+            }
+          }
+        }, delay);
+
+        mainTl.to(el, { opacity: 0, duration: 0.35, ease: 'power2.in' }, delay + 0.18);
+      });
+
+      // Complete stillness at 0.72s
+      mainTl.call(() => {
+        // Done
+      }, null, 0.72);
+    }
+
+    // Auto-play on load
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(playBang, 250);
+    });
+  </script>
+</body>
+</html>
