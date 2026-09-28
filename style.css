@@ -152,11 +152,103 @@ body {
   height: min(calc(100dvh - 75px), 880px);
   aspect-ratio: 1748 / 2485;
   max-width: 95vw;
-  background-color: var(--color-bg);
+  background-color: #12141a; /* Tamni tehnički ugljen kao polazna podloga */
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 3px 10px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   border-radius: clamp(18px, 4.5cqi, 32px);
   container-type: inline-size;
+}
+
+/* --------------------------------------------------------------------------
+   Podloga tamni tehnički ugljen & Singularnost (Prijedlog 2)
+   -------------------------------------------------------------------------- */
+.card-base {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 45.4%, #1a1d26 0%, #0d0f14 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.grid-lines {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.7;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Obojana ploha koja eksplodira i popunjava prostor */
+.flood-plane {
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-bg);
+  z-index: 2;
+  pointer-events: none;
+  clip-path: polygon(50% 45.4%, 50% 45.4%, 50% 45.4%, 50% 45.4%);
+  will-change: clip-path, opacity;
+}
+
+/* Kinetički vektorski udarni valovi */
+.shockwaves-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* Nitni križ & Singularnost (Optički nišan na točki znaka) */
+.singularity-hud {
+  position: absolute;
+  left: 50%;
+  top: 45.4%;
+  width: 0;
+  height: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.crosshair-line {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.65);
+}
+.crosshair-h {
+  top: 0;
+  left: -24px;
+  width: 48px;
+  height: 1px;
+}
+.crosshair-v {
+  top: -24px;
+  left: 0;
+  width: 1px;
+  height: 48px;
+}
+.crosshair-ring {
+  position: absolute;
+  top: -14px;
+  left: -14px;
+  width: 28px;
+  height: 28px;
+  border: 1px dashed rgba(255, 255, 255, 0.75);
+  border-radius: 50%;
+}
+.seed-dot {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  width: 12px;
+  height: 12px;
+  background-color: var(--color-bg);
+  transform: rotate(45deg) scale(0);
+  box-shadow: 0 0 16px var(--color-bg);
 }
 
 /* --------------------------------------------------------------------------
@@ -379,13 +471,31 @@ body {
 
 .fragment-item {
   position: absolute;
-  top: 48%;
+  top: 45.4%;
   left: 50%;
-  width: clamp(160px, 34cqi, 280px);
-  aspect-ratio: 95 / 67;
   transform-origin: center center;
   will-change: transform, opacity;
   pointer-events: none;
+}
+
+.fragment-item.size-monumental {
+  width: clamp(220px, 48cqi, 360px);
+  aspect-ratio: 95 / 67;
+}
+
+.fragment-item.size-large {
+  width: clamp(160px, 34cqi, 260px);
+  aspect-ratio: 95 / 67;
+}
+
+.fragment-item.size-mid {
+  width: clamp(100px, 22cqi, 170px);
+  aspect-ratio: 95 / 67;
+}
+
+.fragment-item.size-shard {
+  width: clamp(55px, 12cqi, 95px);
+  aspect-ratio: 95 / 67;
 }
 
 .fragment-item svg {
@@ -393,6 +503,7 @@ body {
   height: 100%;
   display: block;
   overflow: visible;
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.22));
 }
 
 /* Central assembling symbol (Exact official brand vector) */
