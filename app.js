@@ -159,23 +159,19 @@
     }
   }
 
-  // Izvorne vektorske geometrije znaka FGAG i arhitektonske grede za eksploziju
+  // Izvorne 3 vektorske geometrije znaka FGAG za eksploziju i dekonstrukciju
   const SVG_SHAPES = [
-    // 0: Lijevi poligon
+    // 0: Lijevi poligon (peterokutna/šesterokutna prizma)
     `<svg viewBox="0 0 93.64 65.81" preserveAspectRatio="xMidYMid meet">
       <polygon points="63.48 0 0 21.94 0 65.81 51.45 65.81 93.64 32.91 93.64 0 63.48 0" />
     </svg>`,
-    // 1: Središnji trokut
+    // 1: Središnji trokutasti klin (kosi luk)
     `<svg viewBox="0 0 95.68 67.13" preserveAspectRatio="xMidYMid meet">
       <polygon points="43.88 0 0 34.23 0 67.13 95.68 67.13 43.88 0" />
     </svg>`,
-    // 2: Desni zakrivljeni segment
+    // 2: Desni segment (četvrtina luka s vertikalom)
     `<svg viewBox="0 0 71.1 65.85" preserveAspectRatio="xMidYMid meet">
       <path d="M54.84,0C21.94,0,0,21.94,0,54.85v11h71.1V0Z" />
-    </svg>`,
-    // 3: Arhitektonski romboidni profil / statička greda
-    `<svg viewBox="0 0 100 45" preserveAspectRatio="xMidYMid meet">
-      <polygon points="0,45 35,0 100,0 65,45" />
     </svg>`
   ];
 
@@ -261,8 +257,8 @@
     const modeIndex = Math.floor(random() * EXPLOSION_MODES.length);
     const mode = EXPLOSION_MODES[modeIndex];
 
-    // 4. Broj elemenata: reducirano za 50% (28 do 34 elementa) za glatko izvođenje na slabijim računalima
-    const fragmentCount = 28 + Math.floor(random() * 7);
+    // 4. Broj elemenata: točno 21 do 24 autentičnih FGAG fragmenata za savršenih 60 FPS
+    const fragmentCount = 21 + Math.floor(random() * 4);
     const fragments = [];
 
     // Žarište eksplozije
@@ -270,53 +266,55 @@
     const focusY = mode.id === 'asymmetric' ? (random() * 140 - 70) : 0;
 
     for (let i = 0; i < fragmentCount; i++) {
-      const shapeType = i % 4; // 0: poligon, 1: trokut, 2: luk, 3: greda
+      const shapeType = i % 3; // 0: lijevi poligon, 1: srednji klin, 2: desni luk (točno 3 znaka)
 
       // Mjerilo i hijerarhija elemenata
       let sizeClass = 'size-mid';
       let scaleBurst = 1.0;
 
-      if (i < 5) {
+      if (i < 4) {
         // Monumentalne tektonske plohe
         sizeClass = 'size-monumental';
-        scaleBurst = 2.6 + random() * 1.3;
-      } else if (i < 15) {
+        scaleBurst = 2.4 + random() * 1.4;
+      } else if (i < 12) {
         // Veliki modularni elementi
         sizeClass = 'size-large';
-        scaleBurst = 1.6 + random() * 0.8;
-      } else if (i < 25) {
+        scaleBurst = 1.5 + random() * 0.8;
+      } else if (i < 18) {
         // Srednji elementi
         sizeClass = 'size-mid';
-        scaleBurst = 1.0 + random() * 0.5;
+        scaleBurst = 0.95 + random() * 0.45;
       } else {
         // Brze sitne krhotine i detalji
         sizeClass = 'size-shard';
-        scaleBurst = 0.6 + random() * 0.35;
+        scaleBurst = 0.55 + random() * 0.30;
       }
 
-      // Bogat, visokokontrastan raspored boja
+      // Sofisticirana harmonijska distribucija boja (izvedena iz teme)
       let color;
       let opacityBurst;
 
-      if (i % 5 === 0) {
-        // Tamni arhitektonski rez / akcent
+      if (i % 6 === 0) {
+        // Duboki arhitektonski rez / akcent
         color = palette.accentShape;
-        opacityBurst = 0.85 + random() * 0.15;
-      } else if (i % 5 === 1) {
-        // Čista svijetla ravnina (visoki kontrast)
+        opacityBurst = 0.90;
+      } else if (i % 6 === 1) {
+        // Čista svijetla ravnina visokog kontrasta
         color = '#FFFFFF';
-        opacityBurst = 0.90 + random() * 0.10;
+        opacityBurst = 0.95;
       } else if (i % 2 === 0) {
+        // Sekundarni tonirani ton (Tint B)
         color = palette.secondaryShape;
-        opacityBurst = 0.88 + random() * 0.12;
+        opacityBurst = 0.92;
       } else {
+        // Primarni svijetli ton (Tint A)
         color = palette.primaryShape;
-        opacityBurst = 0.92 + random() * 0.08;
+        opacityBurst = 0.94;
       }
 
       // Kretanje ovisno o režimu
       let burstX, burstY;
-      const baseDistance = (sizeClass === 'size-shard' ? 380 : 260) + random() * 460;
+      const baseDistance = (sizeClass === 'size-shard' ? 360 : 250) + random() * 420;
 
       if (mode.id === 'diagonal') {
         const diagAngle = (random() > 0.5 ? Math.PI * 0.25 : Math.PI * 1.25) + (random() * 0.6 - 0.3);
@@ -324,12 +322,12 @@
         burstY = Math.sin(diagAngle) * (baseDistance * 0.95);
       } else if (mode.id === 'horizontal') {
         const horizSign = random() > 0.5 ? 1 : -1;
-        burstX = horizSign * (280 + random() * 480);
-        burstY = (random() * 280 - 140);
+        burstX = horizSign * (270 + random() * 450);
+        burstY = (random() * 260 - 130);
       } else if (mode.id === 'vertical') {
         const vertSign = random() > 0.5 ? 1 : -1;
-        burstX = (random() * 240 - 120);
-        burstY = vertSign * (280 + random() * 450);
+        burstX = (random() * 220 - 110);
+        burstY = vertSign * (270 + random() * 420);
       } else if (mode.id === 'vortex') {
         const spiralAngle = (i / fragmentCount) * Math.PI * 2.2 + (random() * 0.4);
         const spiralDist = baseDistance * (0.75 + (i / fragmentCount) * 0.55);
@@ -346,9 +344,9 @@
         burstY = Math.sin(angle) * baseDistance;
       }
 
-      const rotationBurst = (random() * 540 - 270);
-      const delayBurst = START_DELAY + 0.22 + (random() * 0.14);
-      const dissolveDelay = START_DELAY + 1.70 + (i * 0.015) + (random() * 0.10);
+      const rotationBurst = (random() * 560 - 280);
+      const delayBurst = START_DELAY + 0.22 + (random() * 0.12);
+      const dissolveDelay = START_DELAY + 1.80 + (i * 0.02) + (random() * 0.08);
 
       fragments.push({
         id: `frag-${i}`,
@@ -358,38 +356,37 @@
         burstX,
         burstY,
         scaleBurst,
+        driftScale: scaleBurst * 1.35,
         rotationBurst,
+        driftRotation: rotationBurst + (random() * 70 - 35),
         opacityBurst,
         delayBurst,
         dissolveDelay
       });
     }
 
-    // 5. Tri temeljna dijela vodenog žiga
-    const wmPieces = {
+    // 5. Kinematički parametri za 3-dijelno sklapanje vodenog žiga (Shape Transformation)
+    const wmAssembly = {
       left: {
-        burstX: -200 - random() * 120,
-        burstY: -90 - random() * 120,
-        scaleBurst: 2.1 + random() * 0.7,
-        rotationBurst: -45 + random() * 25,
-        delayBurst: START_DELAY + 0.23 + random() * 0.05,
-        convDelay: START_DELAY + 1.90 + random() * 0.08
+        startX: -210 - random() * 80,
+        startY: -130 - random() * 90,
+        startScale: 2.2 + random() * 0.6,
+        startRotation: -160 + random() * 60,
+        delay: START_DELAY + 2.05
       },
       center: {
-        burstX: -40 + random() * 80,
-        burstY: -190 - random() * 120,
-        scaleBurst: 2.2 + random() * 0.8,
-        rotationBurst: 15 + random() * 35,
-        delayBurst: START_DELAY + 0.25 + random() * 0.05,
-        convDelay: START_DELAY + 1.93 + random() * 0.08
+        startX: -20 + random() * 50,
+        startY: -210 - random() * 90,
+        startScale: 2.4 + random() * 0.7,
+        startRotation: 120 + random() * 60,
+        delay: START_DELAY + 2.17 // 120ms stagger
       },
       right: {
-        burstX: 190 + random() * 130,
-        burstY: 90 + random() * 120,
-        scaleBurst: 2.0 + random() * 0.7,
-        rotationBurst: -45 + random() * 30,
-        delayBurst: START_DELAY + 0.27 + random() * 0.05,
-        convDelay: START_DELAY + 1.96 + random() * 0.08
+        startX: 200 + random() * 80,
+        startY: 110 + random() * 90,
+        startScale: 2.1 + random() * 0.6,
+        startRotation: -140 + random() * 60,
+        delay: START_DELAY + 2.29 // 120ms stagger
       }
     };
 
@@ -400,7 +397,7 @@
       mode,
       fragmentCount,
       fragments,
-      wmPieces
+      wmAssembly
     };
   }
 
@@ -565,7 +562,8 @@
       display: 'block'
     });
 
-    // 11. Sekundarni leteći oblici (58-70 elemenata)
+    // 11. Sekundarni leteći oblici (21 do 24 autentičnih FGAG elemenata)
+    gsap.set(DOM.fragmentsLayer, { opacity: 1, display: 'block' });
     fragmentElements.forEach((el) => {
       gsap.set(el, {
         x: 0,
@@ -578,18 +576,21 @@
       });
     });
 
-    // 12. Vodeni žig - pripremi dijelove za rođenje iz singularnosti
+    // 12. Središnji vodeni žig - priprema za kinematičko 3-dijelno sklapanje
     gsap.set(DOM.watermarkZone, {
       opacity: 1,
-      visibility: 'visible'
+      scale: 1,
+      visibility: 'visible',
+      transformOrigin: '50% 50%'
     });
 
     gsap.set([DOM.wmLeft, DOM.wmCenter, DOM.wmRight], {
-      x: 0,
-      y: 0,
+      xPercent: 0,
+      yPercent: 0,
       scale: 0,
       rotation: 0,
       opacity: 0,
+      filter: 'blur(0px)',
       transformOrigin: '50% 50%'
     });
   }
@@ -638,7 +639,7 @@
     // 2. Taktilni mikro-trzaj kartice (camera recoil)
     // 3. Obojana ploha pozadine munjevito preplavi čestitku
     // 4. Kinetički vektorski udarni valovi pucaju prema rubovima
-    // 5. 58-70 monumentalnih i modularnih elemenata eruptira prema van
+    // 5. 21-24 autentičnih FGAG elemenata eruptira u prostor
     // -----------------------------------------------------------------------
 
     // 1. HUD nestaje u bljesku
@@ -667,8 +668,16 @@
         } else {
           DOM.floodPlane.style.clipPath = getBackgroundClipPath(config.geom.id, bgProgress.val);
         }
+      },
+      onComplete: () => {
+        DOM.floodPlane.style.clipPath = 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)';
       }
     }, T0 + 0.22);
+
+    // Timeline marker koji osigurava punu pokrivenost kod seek/scrub operacija
+    tl.set(DOM.floodPlane, {
+      clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)'
+    }, T0 + 0.75);
 
     // 4. Stvaranje 4 dinamička udarna vala (shockwave contours)
     const shockwavePaths = [];
@@ -707,7 +716,8 @@
       tl.to(p, { opacity: 0, duration: 0.32, ease: 'power2.in' }, delayW + 0.18);
     }
 
-    // 5. Erupcija 58-70 elemenata iz središta singularnosti
+    // 5. Erupcija 21-24 autentičnih FGAG fragmenata iz središta singularnosti
+    // Korištenje kinetičke krivulje (power4.out) za filmski osjećaj eksplozije i viskoznog smirenja
     fragmentElements.forEach((el, index) => {
       const frag = config.fragments[index];
       tl.to(el, {
@@ -717,103 +727,104 @@
         rotation: frag.rotationBurst,
         opacity: frag.opacityBurst,
         duration: 1.55,
-        ease: 'power3.out'
+        ease: 'power4.out'
       }, frag.delayBurst);
     });
 
-    // 6. Tri izvorne plohe vodenog žiga rađaju se iz središnje singularnosti
-    tl.fromTo(DOM.wmLeft, {
-      x: 0,
-      y: 0,
-      scale: 0.05,
-      rotation: 0,
-      opacity: 0
-    }, {
-      x: config.wmPieces.left.burstX,
-      y: config.wmPieces.left.burstY,
-      scale: config.wmPieces.left.scaleBurst,
-      rotation: config.wmPieces.left.rotationBurst,
-      opacity: 0.95,
-      duration: 1.50,
-      ease: 'power3.out'
-    }, config.wmPieces.left.delayBurst);
-
-    tl.fromTo(DOM.wmCenter, {
-      x: 0,
-      y: 0,
-      scale: 0.05,
-      rotation: 0,
-      opacity: 0
-    }, {
-      x: config.wmPieces.center.burstX,
-      y: config.wmPieces.center.burstY,
-      scale: config.wmPieces.center.scaleBurst,
-      rotation: config.wmPieces.center.rotationBurst,
-      opacity: 0.95,
-      duration: 1.50,
-      ease: 'power3.out'
-    }, config.wmPieces.center.delayBurst);
-
-    tl.fromTo(DOM.wmRight, {
-      x: 0,
-      y: 0,
-      scale: 0.05,
-      rotation: 0,
-      opacity: 0
-    }, {
-      x: config.wmPieces.right.burstX,
-      y: config.wmPieces.right.burstY,
-      scale: config.wmPieces.right.scaleBurst,
-      rotation: config.wmPieces.right.rotationBurst,
-      opacity: 0.95,
-      duration: 1.50,
-      ease: 'power3.out'
-    }, config.wmPieces.right.delayBurst);
-
     // -----------------------------------------------------------------------
-    // FAZA 3: KRISTALIZACIJA VODENOG ŽIGA & RED (T0 + 1.80 – T0 + 3.36s)
+    // FAZA 3: RASPLET EKSPLOZIJE & TRANSFORMACIJA OBLIKA (T0 + 1.80 – T0 + 3.65s)
+    // 1. Raspršeni fragmenti nastavljaju lagani drift i nestaju u pozadini
+    // 2. Tri izvorne plohe vodenog žiga ulijeću iz prostora rotirajući se,
+    //    postupno se izoštravaju iz blura (filter: blur(8px) -> blur(0px))
+    //    i dosjedaju u točan monolitni FGAG simbol (Zero Gap).
     // -----------------------------------------------------------------------
-    // 1. Raspršeni oblici usporavaju i nestaju u obojanoj podlozi
+
+    // 1. Sekundarni drift i tiho nestajanje fragmenata
     fragmentElements.forEach((el, index) => {
       const frag = config.fragments[index];
       tl.to(el, {
-        scale: 0.15,
+        scale: frag ? frag.driftScale : 1.2,
+        rotation: frag ? frag.driftRotation : 45,
         opacity: 0,
         duration: 0.95,
         ease: 'power2.inOut'
-      }, frag ? frag.dissolveDelay : (T0 + 1.80 + (index * 0.018)));
+      }, frag ? frag.dissolveDelay : (T0 + 1.80 + (index * 0.02)));
     });
 
-    // 2. Tri plohe vodenog žiga precizno dosjedaju u točan znak (Zero Gap)
-    tl.to(DOM.wmLeft, {
-      x: 0,
-      y: 0,
-      scale: 1.0,
-      rotation: 0,
-      opacity: 1,
-      duration: 1.35,
-      ease: 'power3.out'
-    }, config.wmPieces.left.convDelay);
+    // Čišćenje sloja fragmenata nakon potpunog rasapa
+    tl.set(DOM.fragmentsLayer, { opacity: 0, display: 'none' }, T0 + 3.40);
 
-    tl.to(DOM.wmCenter, {
-      x: 0,
-      y: 0,
+    // 2. Kinematičko sklapanje simbola: 3 segmenta stižu uz stagger od 120ms
+    // Lijevi segment (wm-left)
+    tl.fromTo(DOM.wmLeft, {
+      xPercent: config.wmAssembly.left.startX,
+      yPercent: config.wmAssembly.left.startY,
+      scale: config.wmAssembly.left.startScale,
+      rotation: config.wmAssembly.left.startRotation,
+      filter: 'blur(8px)',
+      opacity: 0
+    }, {
+      xPercent: 0,
+      yPercent: 0,
       scale: 1.0,
       rotation: 0,
+      filter: 'blur(0px)',
       opacity: 1,
-      duration: 1.38,
+      duration: 1.45,
       ease: 'power3.out'
-    }, config.wmPieces.center.convDelay);
+    }, config.wmAssembly.left.delay);
 
-    tl.to(DOM.wmRight, {
-      x: 0,
-      y: 0,
+    // Središnji klin (wm-center) - 120ms stagger
+    tl.fromTo(DOM.wmCenter, {
+      xPercent: config.wmAssembly.center.startX,
+      yPercent: config.wmAssembly.center.startY,
+      scale: config.wmAssembly.center.startScale,
+      rotation: config.wmAssembly.center.startRotation,
+      filter: 'blur(8px)',
+      opacity: 0
+    }, {
+      xPercent: 0,
+      yPercent: 0,
       scale: 1.0,
       rotation: 0,
+      filter: 'blur(0px)',
       opacity: 1,
-      duration: 1.35,
+      duration: 1.45,
       ease: 'power3.out'
-    }, config.wmPieces.right.convDelay);
+    }, config.wmAssembly.center.delay);
+
+    // Desni zakrivljeni segment (wm-right) - 120ms stagger
+    tl.fromTo(DOM.wmRight, {
+      xPercent: config.wmAssembly.right.startX,
+      yPercent: config.wmAssembly.right.startY,
+      scale: config.wmAssembly.right.startScale,
+      rotation: config.wmAssembly.right.startRotation,
+      filter: 'blur(8px)',
+      opacity: 0
+    }, {
+      xPercent: 0,
+      yPercent: 0,
+      scale: 1.0,
+      rotation: 0,
+      filter: 'blur(0px)',
+      opacity: 1,
+      duration: 1.45,
+      ease: 'power3.out'
+    }, config.wmAssembly.right.delay);
+
+    // 3. Suptilni makro-puls vodenog žiga pri sklapanju (elastično smirivanje)
+    tl.fromTo(DOM.watermarkZone, {
+      scale: 1.06
+    }, {
+      scale: 1.0,
+      duration: 0.90,
+      ease: 'power2.out'
+    }, T0 + 2.50);
+
+    // Čišćenje GPU filtera nakon završetka transformacije oblika
+    tl.set([DOM.wmLeft, DOM.wmCenter, DOM.wmRight], {
+      filter: 'none'
+    }, T0 + 3.75);
 
     // -----------------------------------------------------------------------
     // FAZA 4: TEKTONSKA KOREOGRAFIJA JUBILEJA I ZAVRŠNOG KADRA (T0 + 3.86 – T0 + 6.00s)
