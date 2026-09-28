@@ -372,21 +372,21 @@
         startY: -130 - random() * 90,
         startScale: 2.2 + random() * 0.6,
         startRotation: -160 + random() * 60,
-        delay: START_DELAY + 2.05
+        delay: START_DELAY + 1.80
       },
       center: {
         startX: -20 + random() * 50,
         startY: -210 - random() * 90,
         startScale: 2.4 + random() * 0.7,
         startRotation: 120 + random() * 60,
-        delay: START_DELAY + 2.17 // 120ms stagger
+        delay: START_DELAY + 1.92 // 120ms stagger
       },
       right: {
         startX: 200 + random() * 80,
         startY: 110 + random() * 90,
         startScale: 2.1 + random() * 0.6,
         startRotation: -140 + random() * 60,
-        delay: START_DELAY + 2.29 // 120ms stagger
+        delay: START_DELAY + 2.04 // 120ms stagger
       }
     };
 
@@ -431,6 +431,7 @@
     rule2: document.getElementById('el-rule-2'),
     institutionZone: document.getElementById('el-institution'),
     officialLogo: document.getElementById('official-logo-svg'),
+    dekanZone: document.getElementById('el-dekan-zone'),
     dekanTitle: document.getElementById('el-dekan-title'),
     dekanName: document.getElementById('el-dekan-name'),
     seedBadge: document.getElementById('seed-badge'),
@@ -556,6 +557,9 @@
     });
 
     // 10. Dekan potpis
+    if (DOM.dekanZone) {
+      gsap.set(DOM.dekanZone, { opacity: 1, display: 'flex' });
+    }
     gsap.set([DOM.dekanTitle, DOM.dekanName], {
       y: 10,
       opacity: 0,
@@ -746,13 +750,13 @@
         scale: frag ? frag.driftScale : 1.2,
         rotation: frag ? frag.driftRotation : 45,
         opacity: 0,
-        duration: 0.95,
+        duration: 0.85,
         ease: 'power2.inOut'
-      }, frag ? frag.dissolveDelay : (T0 + 1.80 + (index * 0.02)));
+      }, frag ? (T0 + 1.55 + (index * 0.015)) : (T0 + 1.60 + (index * 0.015)));
     });
 
     // Čišćenje sloja fragmenata nakon potpunog rasapa
-    tl.set(DOM.fragmentsLayer, { opacity: 0, display: 'none' }, T0 + 3.40);
+    tl.set(DOM.fragmentsLayer, { opacity: 0, display: 'none' }, T0 + 2.90);
 
     // 2. Kinematičko sklapanje simbola: 3 segmenta stižu uz stagger od 120ms
     // Lijevi segment (wm-left)
@@ -770,7 +774,7 @@
       rotation: 0,
       filter: 'blur(0px)',
       opacity: 1,
-      duration: 1.45,
+      duration: 1.25,
       ease: 'power3.out'
     }, config.wmAssembly.left.delay);
 
@@ -789,7 +793,7 @@
       rotation: 0,
       filter: 'blur(0px)',
       opacity: 1,
-      duration: 1.45,
+      duration: 1.25,
       ease: 'power3.out'
     }, config.wmAssembly.center.delay);
 
@@ -808,7 +812,7 @@
       rotation: 0,
       filter: 'blur(0px)',
       opacity: 1,
-      duration: 1.45,
+      duration: 1.25,
       ease: 'power3.out'
     }, config.wmAssembly.right.delay);
 
@@ -817,82 +821,83 @@
       scale: 1.06
     }, {
       scale: 1.0,
-      duration: 0.90,
+      duration: 0.80,
       ease: 'power2.out'
-    }, T0 + 2.50);
+    }, T0 + 2.30);
 
     // Čišćenje GPU filtera nakon završetka transformacije oblika
     tl.set([DOM.wmLeft, DOM.wmCenter, DOM.wmRight], {
       filter: 'none'
-    }, T0 + 3.75);
+    }, T0 + 3.35);
 
     // -----------------------------------------------------------------------
-    // FAZA 4: TEKTONSKA KOREOGRAFIJA JUBILEJA I ZAVRŠNOG KADRA (T0 + 3.86 – T0 + 6.00s)
+    // FAZA 4: TEKTONSKA KOREOGRAFIJA JUBILEJA I ZAVRŠNOG KADRA (T0 + 3.20 – T0 + 5.00s)
+    // Redoslijed od vrha prema dnu: 55 -> Godine -> Čestitka -> Slogan -> Crte -> Logo -> Dekan
     // -----------------------------------------------------------------------
-    // 1. Broj 55 izranja točno ~0.50 s nakon smirenja znaka (T0 + 3.86s)
+    // 1. Broj 55 izranja (T0 + 3.20s)
     tl.to(DOM.jubileeNum, {
       yPercent: 0,
       y: 0,
       opacity: 1,
-      duration: 0.80,
+      duration: 0.65,
       ease: 'power3.out'
-    }, T0 + 3.86);
+    }, T0 + 3.20);
 
-    // 2. Godine 1971. – 2026. (T0 + 4.06s)
+    // 2. Godine 1971. – 2026. (T0 + 3.35s)
     tl.to(DOM.jubileeYears, {
       yPercent: 0,
       y: 0,
       opacity: 1,
-      duration: 0.70,
+      duration: 0.60,
       ease: 'power3.out'
-    }, T0 + 4.06);
+    }, T0 + 3.35);
 
-    // 3. Tekst čestitke (T0 + 4.25s)
+    // 3. Tekst čestitke (T0 + 3.55s)
     tl.to(DOM.greetingMsg, {
       y: 0,
       opacity: 1,
-      duration: 0.55,
-      ease: 'power3.out'
-    }, T0 + 4.25);
-
-    // 4. Horizontalne crte (T0 + 4.60s)
-    tl.to([DOM.rule1, DOM.rule2], {
-      scaleX: 1,
-      opacity: 0.95,
-      duration: 0.45,
-      stagger: 0.08,
-      ease: 'power3.out'
-    }, T0 + 4.60);
-
-    // 5. Službeni znak sa tekstom (T0 + 4.85s)
-    tl.to(DOM.officialLogo, {
-      opacity: 1,
-      y: 0,
       duration: 0.50,
       ease: 'power3.out'
-    }, T0 + 4.85);
+    }, T0 + 3.55);
 
-    // 6. Slogan (T0 + 5.20s)
+    // 4. Slogan "ZNANJE KOJE MIJENJA PROSTOR" (T0 + 3.80s)
     const sloganSpans = DOM.slogan.querySelectorAll('span');
     tl.to(sloganSpans, {
       yPercent: 0,
       opacity: 1,
       duration: 0.45,
-      stagger: 0.12,
+      stagger: 0.08,
       ease: 'power3.out'
-    }, T0 + 5.20);
+    }, T0 + 3.80);
 
-    // 7. Dekan potpis (T0 + 5.55s)
+    // 5. Horizontalne crte 1 i 2 (T0 + 4.10s)
+    tl.to([DOM.rule1, DOM.rule2], {
+      scaleX: 1,
+      opacity: 0.95,
+      duration: 0.40,
+      stagger: 0.08,
+      ease: 'power3.out'
+    }, T0 + 4.10);
+
+    // 6. Službeni institucionalni logotip (T0 + 4.25s)
+    tl.to(DOM.officialLogo, {
+      opacity: 1,
+      y: 0,
+      duration: 0.45,
+      ease: 'power3.out'
+    }, T0 + 4.25);
+
+    // 7. Dekan potpis: "Dekan" i "prof. dr. sc. Neno Torić" (T0 + 4.45s)
     tl.to([DOM.dekanTitle, DOM.dekanName], {
       y: 0,
       opacity: 1,
       duration: 0.45,
-      stagger: 0.08,
+      stagger: 0.06,
       ease: 'power3.out'
-    }, T0 + 5.55);
+    }, T0 + 4.45);
 
-    // 8. Završetak točno u T0 + 6.00s – potpuna stabilnost i tišina
-    tl.set({}, {}, T0 + 6.00);
+    // 8. Završetak točno u T0 + 5.00s (real-time 6.00s) – potpuna stabilnost i savršen kadar
+    tl.set({}, {}, T0 + 5.00);
 
     return tl;
   }
