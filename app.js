@@ -261,8 +261,8 @@
     const modeIndex = Math.floor(random() * EXPLOSION_MODES.length);
     const mode = EXPLOSION_MODES[modeIndex];
 
-    // 4. Broj elemenata: 58 do 70 za bogat, monumentalan prasak
-    const fragmentCount = 58 + Math.floor(random() * 13);
+    // 4. Broj elemenata: reducirano za 50% (28 do 34 elementa) za glatko izvođenje na slabijim računalima
+    const fragmentCount = 28 + Math.floor(random() * 7);
     const fragments = [];
 
     // Žarište eksplozije
@@ -276,22 +276,22 @@
       let sizeClass = 'size-mid';
       let scaleBurst = 1.0;
 
-      if (i < 8) {
+      if (i < 5) {
         // Monumentalne tektonske plohe
         sizeClass = 'size-monumental';
-        scaleBurst = 2.4 + random() * 1.4;
-      } else if (i < 24) {
+        scaleBurst = 2.6 + random() * 1.3;
+      } else if (i < 15) {
         // Veliki modularni elementi
         sizeClass = 'size-large';
-        scaleBurst = 1.5 + random() * 0.9;
-      } else if (i < 46) {
+        scaleBurst = 1.6 + random() * 0.8;
+      } else if (i < 25) {
         // Srednji elementi
         sizeClass = 'size-mid';
-        scaleBurst = 0.9 + random() * 0.6;
+        scaleBurst = 1.0 + random() * 0.5;
       } else {
         // Brze sitne krhotine i detalji
         sizeClass = 'size-shard';
-        scaleBurst = 0.5 + random() * 0.45;
+        scaleBurst = 0.6 + random() * 0.35;
       }
 
       // Bogat, visokokontrastan raspored boja
