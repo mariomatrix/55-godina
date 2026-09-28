@@ -1,0 +1,732 @@
+Master prompt: FGAG 55, generativna web-čestitka
+1. Uloga i cilj
+
+Djeluj kao vrhunski kreativni developer, motion dizajner i stručnjak za generativne web-animacije.
+
+Potrebno je osmisliti i implementirati interaktivnu web-čestitku povodom 55. obljetnice osnutka i djelovanja Fakulteta građevinarstva, arhitekture i geodezije Sveučilišta u Splitu.
+
+Web-čestitka otvara se izravnim linkom ili skeniranjem QR koda s tiskane čestitke.
+
+Glavni cilj je postići jasan vau efekt i osjećaj iznenađenja pri svakom novom otvaranju stranice. Svako ponovno učitavanje mora generirati novu izvedbu iste animacijske obitelji, koristeći UTC vrijeme pristupa kao seed.
+
+Animacija ne smije djelovati kao generička prezentacijska animacija. Mora izgledati kao suvremeni, autorski motion-design sustav koji proizlazi iz geometrije FGAG znaka i službene knjige grafičkih standarda.
+
+2. Osnovni kreativni koncept
+
+Naziv animacijske obitelji:
+
+Prostorna eksplozija
+
+Animacija počinje kratkim, snažnim prikazom izvornog FGAG znaka.
+
+Znak se zatim rastavlja na svoja tri izvorna geometrijska dijela. Iz tih dijelova nastaje prostorna eksplozija većih i manjih izvedenih oblika.
+
+Izvedeni oblici:
+
+šire se iz središta
+prolaze kroz cijeli kadar
+rotiraju se
+mijenjaju mjerilo
+djelomično izlaze izvan zaslona
+međusobno se preklapaju
+stvaraju pozitivne i negativne prostore
+privremeno prekrivaju pozadinu
+formiraju dinamičan prostorni ritam
+
+Nakon ekspanzije, vizualni se sustav počinje organizirati. Sekundarni oblici postupno izlaze iz kadra, nestaju ili se stapaju s pozadinom.
+
+Tri izvorna dijela FGAG znaka zatim se vraćaju iz različitih smjerova i sastavljaju u izvorni, potpuno ispravan znak.
+
+Sastavljeni znak mora biti jasno i dovoljno dugo vidljiv u središtu kompozicije. To je ključni trenutak animacije.
+
+Nakon kratkog zadržavanja, sastavljeni znak prelazi u službeni logotip s punim hrvatskim nazivom Fakulteta, smješten u donju zonu završne kompozicije.
+
+Animacija završava mirnim, potpuno čitljivim kadrom koji odgovara kompoziciji tiskane čestitke.
+
+Temeljna dramaturška ideja glasi:
+
+Eksplozija prostora, organizacija geometrije, sastavljanje znaka, stabilizacija identiteta.
+
+Koncept se semantički povezuje sa sloganom:
+
+ZNANJE KOJE MIJENJA PROSTOR
+
+3. Trajanje animacije
+
+Ukupno trajanje animacije mora biti:
+
+Točno 6 sekundi
+
+Nakon šeste sekunde završni kadar ostaje potpuno miran i vidljiv bez vremenskog ograničenja.
+
+Za sada ne uvoditi kontinuiranu pozadinsku animaciju nakon završetka. Završna scena mora biti stabilna, dostojanstvena i potpuno čitljiva.
+
+Animacija nema zvuk.
+
+4. Vremenska dramaturgija
+Faza 1: Aktiviranje znaka
+
+Vrijeme: 0,00 do 0,45 sekundi
+
+Na početku se prikazuje čista pozadina u jednoj od službenih paleta.
+
+FGAG znak kratko se pojavljuje u središtu:
+
+može se pojaviti naglim skaliranjem
+može se otkriti maskom
+može nastati iz negativnog prostora
+može se kratko povećati prema gledatelju
+mora odmah biti prepoznatljiv kao izvorni FGAG znak
+
+Početni znak ne smije biti dugo statičan. Njegova je funkcija uspostaviti izvor cijele animacije.
+
+Prvi vizualni događaj treba biti snažan, ali čist. Ne koristiti bljeskove, lens flare, 3D sjene ili generičke svjetlosne efekte.
+
+Faza 2: Eksplozija prostora
+
+Vrijeme: 0,45 do 2,20 sekundi
+
+Tri dijela izvornog znaka razdvajaju se.
+
+Istodobno nastaje između 8 i 18 sekundarnih izvedenih oblika.
+
+Sekundarni oblici temelje se isključivo na tri izvorne geometrijske forme FGAG znaka:
+
+lijevi poligonalni element
+središnji trokutasti element
+desni zakrivljeni element
+
+Sekundarni oblici mogu biti:
+
+povećane kopije izvornih dijelova
+djelomično izrezane kopije
+kopije koje ulaze samo jednim dijelom u kadar
+preklopljene kopije u različitim službenim nijansama
+oblici koji stvaraju negativni prostor
+
+Ne uvoditi krugove, čestice, ilustracije, nepripadajuće poligone ni druge oblike koji ne proizlaze iz geometrije znaka.
+
+Tijekom eksplozije treba generativno mijenjati:
+
+broj oblika
+položaj svakog oblika
+početno mjerilo
+završno mjerilo
+smjer kretanja
+kut rotacije
+smjer rotacije
+brzinu
+vremenski pomak ulaska
+dubinu preklapanja
+boju unutar odabrane palete
+način izlaska iz kadra
+
+Eksplozija može imati jedan od sljedećih prostornih karaktera:
+
+radijalna
+dijagonalna
+vertikalna
+horizontalna
+spiralna
+centrifugalna
+asimetrična
+
+Izbor mora biti određen seedom.
+
+Eksplozija mora izgledati dovoljno različito pri svakom ponovnom učitavanju, ali i dalje mora djelovati kao dizajnirana koreografija.
+
+Faza 3: Organizacija geometrije
+
+Vrijeme: 2,20 do 3,30 sekundi
+
+Nakon početne eksplozije pokret mijenja karakter.
+
+Sekundarni oblici:
+
+postupno usporavaju
+mijenjaju smjer
+smanjuju se
+izlaze iz kadra
+stapaju se s pozadinom
+ili se reduciraju na tri glavna dijela znaka
+
+Gledatelj mora primijetiti prijelaz iz ekspanzije i vizualne napetosti prema preciznosti i organizaciji.
+
+Pokret ne smije naglo prestati. Potrebna je jasna koreografska transformacija iz slobodnog kretanja prema konstruktivnom poretku.
+
+U ovoj se fazi može početi pojavljivati slogan:
+
+ZNANJE KOJE MIJENJA PROSTOR
+
+Slogan se može otkrivati:
+
+po riječima
+po dvama retcima
+prolaskom geometrijske maske
+kratkim horizontalnim rezom
+iz zamućenja
+kontroliranim skaliranjem
+ulaskom iz suprotnih smjerova
+
+Sadržaj, font i završni položaj slogana ostaju fiksni.
+
+Faza 4: Sastavljanje izvornog znaka
+
+Vrijeme: 3,30 do 4,25 sekundi
+
+Ovo je najvažniji trenutak animacije.
+
+Tri izvorna dijela znaka dolaze iz različitih smjerova i sastavljaju izvorni FGAG znak.
+
+Za svaki dio mogu se mijenjati:
+
+početni položaj
+početno mjerilo
+početna rotacija
+smjer dolaska
+brzina dolaska
+redoslijed završavanja kretanja
+putanja
+stupanj početnog zamućenja
+
+Međutim, u trenutku sastavljanja svaki dio mora završiti u potpuno izvornom stanju:
+
+translate: 0
+rotate: 0
+scale: 1
+opacity: 1
+blur: 0
+
+
+Konačni sastavljeni znak mora poštovati:
+
+izvorne proporcije
+izvorne koordinate
+izvorne međusobne odnose
+izvornu geometriju
+jednu zajedničku boju
+pravila crne ili bijele varijante znaka
+
+Završni dijelovi službenog znaka ne smiju imati različite boje.
+
+Znak se ne smije stilizirati, deformirati, zrcaliti, rastezati, koristiti u perspektivi niti zadržati bilo koji prijelazni efekt.
+
+Kritično pravilo vidljivosti
+
+Sastavljeni centralni znak mora nakon sastavljanja ostati:
+
+potpuno neproziran
+jasno vidljiv
+nepomičan
+iznad sekundarnih pozadinskih oblika
+prikazan najmanje približno 0,45 do 0,65 sekundi
+
+Za to vrijeme ne smije se pokretati animacija nestajanja roditeljskog SVG-a.
+
+Ne animirati istodobno opacity roditeljskog SVG elementa i opacity triju njegovih dijelova.
+
+Preporučena struktura:
+
+roditeljski SVG ostaje na opacity: 1
+animiraju se samo tri dijela
+nakon njihova sastavljanja sva tri dijela ostaju na opacity: 1
+eventualni kasniji prijelaz izvodi se na zasebnom omotaču, nakon završetka faze sastavljanja
+Faza 5: Prijelaz u službeni logotip
+
+Vrijeme: 4,25 do 5,10 sekundi
+
+Sastavljeni znak prelazi iz središnjeg položaja prema završnom institucionalnom potpisu.
+
+Prijelaz treba izgledati kao jedna kontinuirana radnja, a ne kao nestanak jednog i pojava drugog elementa.
+
+Mogući prijelazi:
+
+Morfološki prijelaz
+
+Centralni znak se smanjuje i pomiče prema donjoj zoni, a zatim mu se otkriva puni naziv Fakulteta.
+
+Grafički rez
+
+Geometrijska ploha prelazi preko centralnog znaka. Nakon prolaska plohe znak se pojavljuje u donjoj zoni kao dio punog logotipa.
+
+Match transition
+
+Centralni znak i znak unutar punog logotipa kratko se preklapaju na istoj vizualnoj putanji. Centralna instanca nestaje tek kada je završna instanca potpuno vidljiva.
+
+Redukcija
+
+Centralna kompozicija postupno se smanjuje i stabilizira na konačnom položaju. Puni naziv Fakulteta pojavljuje se maskom slijeva nadesno.
+
+Završni logotip mora biti izvorni SVG s punim hrvatskim nazivom.
+
+Ne rekonstruirati naziv HTML tekstom ako su dostupne izvorne SVG putanje.
+
+Faza 6: Formiranje završnog kadra
+
+Vrijeme: 5,10 do 6,00 sekundi
+
+U posljednjoj fazi kompozicija se potpuno stabilizira.
+
+Pojavljuju se:
+
+broj 55
+raspon 1971. – 2026.
+tekst čestitke
+slogan
+službeni logotip s punim nazivom
+potpis dekana
+
+Posljednjih približno 0,25 sekundi ne uvoditi nove elemente. Sve mora biti vidljivo, čitljivo i mirno prije točno šeste sekunde.
+
+5. Završni kadar B1
+
+Završni kadar koristi uspravni omjer:
+
+4 : 5
+
+Referentna digitalna dimenzija:
+
+1200 × 1500 px
+
+
+Kompozicija mora biti responzivna, ali zadržavati isti vizualni redoslijed.
+
+Zona 1: Jubilej
+
+Gornja zona sadrži:
+
+55
+1971. – 2026.
+
+
+Broj 55 nalazi se lijevo i dominantan je tipografski element.
+
+Raspon 1971. – 2026. nalazi se desno ili je poravnat prema donjoj trećini broja.
+
+Broj 55 nije znak ni logotip. Mora ostati tipografski čist.
+
+Zona 2: Tekst čestitke
+
+Tekst glasi:
+
+ISKRENE ČESTITKE POVODOM
+55. OBLJETNICE OSNUTKA
+I DJELOVANJA
+
+
+Tekst je lijevo poravnat.
+
+Sadržaj, korišteni font i završni prijelom ne smiju se nasumično mijenjati.
+
+Može se mijenjati samo način njegova ulaska.
+
+Zona 3: Animacijski prostor
+
+Središnja zona služi za:
+
+eksploziju izvedenih oblika
+prostorne prijelaze
+sastavljanje centralnog znaka
+kratko zadržavanje centralnog znaka
+
+U završnom kadru centralni službeni znak ne treba ostati kao zaseban drugi logotip.
+
+Nakon prijelaza u donji institucionalni potpis, u središnjoj zoni mogu ostati samo svijetli sekundarni izvedeni oblici kao trag animacije.
+
+Ti oblici ne smiju konkurirati tekstu.
+
+Zona 4: Slogan
+
+Slogan glasi:
+
+ZNANJE KOJE
+MIJENJA PROSTOR
+
+
+Slogan je drugi najsnažniji tipografski element nakon broja 55.
+
+Sadržaj, završni položaj i tipografija slogana ostaju fiksni.
+
+Način njegova ulaska može biti generativan.
+
+Zona 5: Institucionalni potpis
+
+Donja zona sadrži:
+
+izvorni službeni logotip s punim hrvatskim nazivom
+potpis dekana
+
+Potpis glasi:
+
+Dekan
+prof. dr. sc. Neno Torić
+
+
+Potpis mora biti vizualno odvojen od logotipa i ne smije izgledati kao dio službenog logotipa.
+
+6. Obvezni tekstualni sadržaj
+
+Koristi isključivo sljedeći sadržaj:
+
+55
+
+1971. – 2026.
+
+Iskrene čestitke povodom
+55. obljetnice osnutka i djelovanja
+
+ZNANJE KOJE MIJENJA PROSTOR
+
+Fakultet građevinarstva, arhitekture i geodezije
+
+Dekan
+prof. dr. sc. Neno Torić
+
+
+Puni službeni naziv koristi se u obliku definiranom službenim SVG logotipom.
+
+7. Generativni sustav
+Seed
+
+Pri svakom učitavanju stranice:
+
+očitati aktualno UTC vrijeme
+pretvoriti ga u deterministički numerički seed
+iz seeda generirati jednu konfiguraciju animacije
+konfiguraciju spremiti u memoriju prije pokretanja animacije
+tijekom reprodukcije ne generirati nove slučajne vrijednosti
+
+Primjer sadržaja konfiguracije:
+
+seed
+paleta
+smjer eksplozije
+broj fragmenata
+parametri svakog fragmenta
+početni položaji triju dijelova znaka
+rotacije triju dijelova
+redoslijed sastavljanja
+način ulaska teksta
+način ulaska slogana
+način prijelaza u završni logotip
+
+
+Sve slučajne vrijednosti moraju se izračunati samo jednom, pri stvaranju konfiguracije.
+
+Ponovno učitavanje stranice
+
+Ponovno učitavanje stranice:
+
+očitava novo UTC vrijeme
+generira novi seed
+generira novu konfiguraciju
+pokreće novu vizualnu izvedbu
+
+Nova izvedba treba se dovoljno razlikovati od prethodne.
+
+Gumb „PONOVI”
+
+Klik na gumb:
+
+PONOVI ↻
+
+
+mora:
+
+zaustaviti trenutačne animacije
+vratiti sve elemente u početno stanje
+ponovno koristiti istu spremljenu konfiguraciju
+reproducirati potpuno identičnu animaciju
+
+Klik ne smije:
+
+ponovno očitati UTC vrijeme
+ponovno pokrenuti generator slučajnih brojeva
+promijeniti paletu
+promijeniti putanje
+promijeniti rotacije
+promijeniti redoslijed
+promijeniti način ulaska teksta
+8. Dopuštene palete
+
+Koristiti samo boje iz knjige standarda.
+
+P01: Jubilejska žuta
+Pozadina: #FDB913
+Tekst i logotip: #000000
+Primarni oblici: #FFEFC6
+Sekundarni oblici: #FBDE76
+
+P02: Crna i žuta
+Pozadina: #000000
+Tekst i logotip: #FFFFFF
+Primarni oblici: #FDB913
+Sekundarni oblici: #FBDE76
+
+P03: Crvena
+Pozadina: #EF4E52
+Tekst i logotip: #000000
+Primarni oblici: #FBCABD
+Sekundarni oblici: #F69896
+
+P04: Zelena
+Pozadina: #6AC17B
+Tekst i logotip: #000000
+Primarni oblici: #CDE7CB
+Sekundarni oblici: #A9D7AE
+
+P05: Magenta
+Pozadina: #EF5CA1
+Tekst i logotip: #000000
+Primarni oblici: #FBD6E6
+Sekundarni oblici: #F8C2DA
+
+P06: Svijetloplava
+Pozadina: #99BCCB
+Tekst i logotip: #000000
+Primarni oblici: #D6E2E9
+Sekundarni oblici: #BCDAE7
+
+P07: Navy
+Pozadina: #524FA1
+Tekst i logotip: #FFFFFF
+Primarni oblici: #C7C4E2
+Sekundarni oblici: #A5A9D5
+
+P08: Neutralna
+Pozadina: #EFEBE9 ili #FFFFFF
+Tekst i logotip: #000000
+Primarni oblici: odabrana glavna službena boja
+Sekundarni oblici: pripadajuća svijetla nijansa
+
+Pravila boja
+ne generirati proizvoljne RGB ili HSL boje
+koristiti najviše četiri boje u jednoj izvedbi
+završni znak mora biti potpuno crn ili potpuno bijel
+sva tri dijela završnog znaka moraju biti iste boje
+tekst i logotip moraju imati dovoljan kontrast
+ne koristiti gradijente koji nisu definirani identitetom
+ne koristiti sjene, glow, neon ili 3D efekte
+ne koristiti zlatnu ako nije dio službene palete
+9. Tipografija
+
+Koristiti tipografiju definiranu knjigom standarda:
+
+FK Grotesk
+FK Grotesk SemiMono gdje je propisano
+
+Ne koristiti Arial ili sistemske fontove u završnoj verziji.
+
+Ako službeni web-font nije dostupan, definirati kontrolirani fallback samo za razvoj, ali produkcijska verzija mora koristiti službene fontove.
+
+Tipografija se ne mijenja generativno.
+
+Dopušteno je mijenjati:
+
+način pojavljivanja
+smjer ulaska
+vremenski pomak
+otkrivanje maskom
+ritam pojavljivanja redaka ili riječi
+
+Nije dopušteno mijenjati:
+
+font
+sadržaj
+završni prijelom
+završnu poziciju
+završnu veličinu
+završno poravnanje
+10. Izvorni SVG znak
+
+Koristiti sljedeću izvornu geometriju znaka:
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 326.24 131.63"
+>
+  <polygon
+    id="symbol-left"
+    points="96.39 32.91 32.91 54.85 32.91 98.72 84.36 98.72 126.55 65.82 126.55 32.91 96.39 32.91"
+  />
+
+  <polygon
+    id="symbol-center"
+    points="170.43 31.59 126.55 65.82 126.55 98.72 222.23 98.72 170.43 31.59"
+  />
+
+  <path
+    id="symbol-right"
+    d="M277.07,32.91c-32.9,0-54.84,21.94-54.84,54.85v11h71.1V32.91Z"
+  />
+</svg>
+
+
+Za završni logotip koristiti potpuni dostavljeni SVG s hrvatskim nazivom i izvornim tekstualnim putanjama.
+
+11. Tehnička implementacija
+
+Preferirana izvedba:
+
+HTML
+CSS
+JavaScript
+inline SVG
+Web Animations API ili GSAP timeline
+
+Ako se koristi GSAP, treba jasno odvojiti:
+
+generiranje konfiguracije
+inicijalizaciju elemenata
+izgradnju timelinea
+pokretanje
+resetiranje
+ponavljanje
+
+Preporučena arhitektura:
+
+createSeed()
+createConfiguration(seed)
+createFragments(configuration)
+setInitialState(configuration)
+buildTimeline(configuration)
+playTimeline()
+replaySameTimeline()
+
+
+Funkcija playTimeline() ne smije koristiti Math.random().
+
+Sve slučajne vrijednosti moraju biti dio prethodno spremljene konfiguracije.
+
+12. Responzivnost
+
+Primarno iskustvo je mobilno, zbog otvaranja nakon skeniranja QR koda.
+
+Prioritetni omjeri:
+
+4 : 5
+9 : 16
+mobilni portrait
+tablet portrait
+desktop landscape
+
+
+Master-kompozicija je 4 : 5.
+
+Na mobilnom uređaju:
+
+1971. – 2026. može prijeći ispod broja 55
+tekst može dobiti dodatni redak
+koristiti službenu vertikalnu varijantu logotipa ako horizontalna postane premala
+animirani oblici mogu izlaziti izvan zaslona
+zaštitni prostor logotipa mora ostati očuvan
+završni sadržaj mora biti vidljiv bez skrolanja na uobičajenom mobilnom zaslonu
+
+Na širokom zaslonu čestitku prikazati kao centralni 4 : 5 kadar ili napraviti kontroliranu horizontalnu prilagodbu. Ne rastezati vertikalnu kompoziciju preko cijelog širokog zaslona bez dizajnerskog pravila.
+
+13. Pristupačnost
+
+Implementirati prefers-reduced-motion.
+
+Za korisnike s uključenim smanjenjem pokreta:
+
+ne izvoditi eksploziju
+ne koristiti velike rotacije
+ne koristiti brzo skaliranje
+završni kadar prikazati prijelazom opacityja
+ukupno trajanje reducirane animacije ograničiti na približno 1 sekundu
+zadržati potpuno isti završni sadržaj
+
+Gumb „PONOVI” mora imati pristupačan naziv.
+
+Svi tekstovi moraju ostati stvarni HTML tekst gdje god to ne narušava službeni logotip.
+
+14. Performanse
+
+Animacija mora tečno raditi na suvremenim mobilnim uređajima.
+
+Preferirati animiranje:
+
+transform
+opacity
+filter, samo umjereno i kratkotrajno
+
+
+Izbjegavati:
+
+animiranje layout svojstava
+velik broj kompliciranih SVG filtera
+stalne blur efekte
+skupe blend mode kombinacije na velikim površinama
+prevelik broj DOM elemenata
+kontinuiranu animaciju nakon šeste sekunde
+
+Sekundarni fragmenti mogu biti SVG kopije, ali njihov broj treba ograničiti prema veličini i performansama uređaja.
+
+Na slabijim uređajima smanjiti broj fragmenata, a ne trajanje ili čitljivost završnog kadra.
+
+15. Zaštita vizualnog identiteta
+
+Tijekom animacije smiju se koristiti izvedeni oblici, rotacije, promjene mjerila i preklapanja.
+
+U trenutku formiranja službenog znaka nije dopušteno:
+
+deformirati znak
+promijeniti proporcije
+promijeniti međusobni odnos dijelova
+zasebno obojiti dijelove
+zrcaliti znak
+prikazati znak pod perspektivom
+dodati sjenu
+dodati sjaj
+dodati obris
+dodati 3D efekt
+promijeniti odnos znaka i punog naziva
+koristiti rekonstruirani logotip umjesto izvornog SVG-a
+
+Službeni logotip mora u završnom kadru imati propisani zaštitni prostor.
+
+16. Kriteriji prihvaćanja
+
+Prototip je prihvatljiv samo ako zadovoljava sve sljedeće uvjete:
+
+Animacija traje točno 6 sekundi.
+Centralni FGAG znak jasno je vidljiv nakon sastavljanja.
+Centralni znak ostaje potpuno vidljiv najmanje približno pola sekunde.
+Roditeljski SVG i njegovi dijelovi nemaju konfliktne opacity animacije.
+Završni znak koristi izvornu SVG geometriju.
+Završni logotip koristi službeni SVG s punim nazivom.
+Završni kadar odgovara B1 kompoziciji.
+Gumb „PONOVI” pokreće identičnu animaciju.
+Ponovno učitavanje generira novu animaciju.
+Nema novih slučajnih vrijednosti tijekom funkcije ponavljanja.
+Koriste se samo službene boje.
+Tipografija i tekstualni sadržaj ostaju fiksni.
+Svi elementi završnog kadra čitljivi su do šeste sekunde.
+Animacija dobro radi na mobilnom zaslonu.
+Reducirana varijanta poštuje prefers-reduced-motion.
+Nakon šeste sekunde nema neželjenog kretanja.
+Nema zvuka.
+Nema generičkih čestica, lens flare efekata, sjena ili 3D stilizacije.
+Svako novo učitavanje djeluje očito drugačije.
+Sve izvedbe i dalje djeluju kao dio istog FGAG vizualnog identiteta.
+Završna uputa izvođaču
+
+Nemoj odmah izrađivati cijeli generativni sustav.
+
+Prvo izradi jednu kontroliranu referentnu izvedbu obitelji Prostorna eksplozija u paleti P01, jubilejska žuta.
+
+Referentna izvedba mora dokazati:
+
+kvalitetu prostorne eksplozije
+jasno sastavljanje triju dijelova
+vidljivost centralnog znaka
+prirodan prijelaz u puni logotip
+točan završni kadar B1
+trajanje od šest sekundi
+
+Tek nakon odobrenja referentne izvedbe uvedi UTC seed, dodatne palete i generativne varijacije.
+
+Obrazloženje pristupa
+
+Najvažnija promjena u ovom promptu jest razdvajanje referentne koreografije od generativnog sustava. Najprije treba dokazati da jedan konkretan smjer radi vizualno i tehnički. Tek nakon toga ima smisla povećavati broj slučajnih parametara. Time se izbjegava ponavljanje problema u kojem se istodobno pokušavaju riješiti kompozicija, animacija, slučajnost, responsive ponašanje i završni logotip.

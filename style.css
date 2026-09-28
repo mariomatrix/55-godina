@@ -1,0 +1,447 @@
+/* ==========================================================================
+   FGAG 55 GODINA - GENERATIVNA WEB-ČESTITKA
+   Vjerna implementacija predloška draft cestitke 1.png
+   Paleta: P01 Jubilejska žuta (#f7b512), Tinta (#373435), Vodeni žig (#f5de8c)
+   ========================================================================== */
+
+:root {
+  /* Točne boje izmjerene iz draft cestitke 1.png */
+  --color-bg: #f7b512;
+  --color-ink: #373435;
+  --color-watermark: #f5de8c;
+  --color-shape-primary: #FFEFC6;
+  --color-shape-secondary: #f5de8c;
+  --color-page-backdrop: #111215;
+
+  /* Švicarski neo-grotesk s izvornim hrvatskim dijakritičkim znakovima */
+  --font-grotesk: Arial, "Helvetica Neue", Helvetica, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+  background-color: var(--color-page-backdrop);
+  color: var(--color-ink);
+  font-family: var(--font-grotesk);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* --------------------------------------------------------------------------
+   App Header & Floating Controls
+   -------------------------------------------------------------------------- */
+.app-header {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 28px);
+  max-width: 680px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  pointer-events: auto;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-pill {
+  background: #f7b512;
+  color: #373435;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.seed-pill {
+  background: rgba(25, 27, 32, 0.85);
+  color: #a0a6b4;
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+}
+
+.replay-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #373435;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: var(--font-grotesk);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+  user-select: none;
+}
+
+.replay-btn:hover {
+  background: #f7b512;
+  color: #373435;
+  transform: translateY(-1px);
+}
+
+.replay-btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.replay-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+  display: inline-block;
+}
+
+/* --------------------------------------------------------------------------
+   Viewport & Card Stage
+   -------------------------------------------------------------------------- */
+.viewport-canvas {
+  width: 100%;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 16px 16px;
+}
+
+.card-stage-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-width: 620px;
+}
+
+/* Točan omjer 1748 : 2485 (1 : 1.4216) iz draft cestitke 1.png s prizvukom 70-ih */
+.greeting-card {
+  position: relative;
+  height: min(calc(100dvh - 75px), 880px);
+  aspect-ratio: 1748 / 2485;
+  max-width: 95vw;
+  background-color: var(--color-bg);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 3px 10px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  border-radius: clamp(18px, 4.5cqi, 32px);
+  container-type: inline-size;
+}
+
+/* --------------------------------------------------------------------------
+   Card Layout - Egzaktne proporcije iz draft cestitke 1.png
+   -------------------------------------------------------------------------- */
+.card-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Zona 1: Jubilej (Y: 5.92% do 33.04%) */
+.zone-jubilee {
+  position: absolute;
+  top: 5.92%;
+  left: 7.89%;
+  right: 8.01%;
+  display: flex;
+  flex-direction: column;
+}
+
+.jubilee-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.jubilee-num-wrap {
+  overflow: hidden;
+  display: block;
+  padding: 0 24px 6px 0;
+  margin-right: -24px;
+}
+
+.jubilee-years-wrap {
+  overflow: hidden;
+  display: block;
+  padding: 0 4px 4px 0;
+}
+
+.jubilee-number {
+  font-family: var(--font-grotesk);
+  font-size: clamp(4.6rem, 21.5cqi, 9.8rem);
+  font-weight: 900;
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  color: var(--color-ink);
+  padding-right: 6px;
+}
+
+.jubilee-years {
+  font-family: var(--font-grotesk);
+  font-size: clamp(1.15rem, 5.2cqi, 2.4rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--color-ink);
+  padding-bottom: 0.3cqi;
+}
+
+/* Tekst čestitke (Y: 22.13% do 33.04%, X: 7.89%) */
+.greeting-message {
+  margin-top: 4.8%;
+  font-family: var(--font-grotesk);
+  font-size: clamp(0.9rem, 3.85cqi, 1.75rem);
+  font-weight: 700;
+  line-height: 1.32;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+  text-transform: uppercase;
+}
+
+/* Zona 2: Središnji vodeni žig (Y: 37.22% do 53.56%, X: 4.58% do 94.85%) */
+.zone-watermark {
+  position: absolute;
+  top: 37.22%;
+  left: 4.58%;
+  width: 90.27%;
+  height: 16.34%;
+  pointer-events: none;
+  z-index: 2;
+  overflow: visible;
+}
+
+.watermark-svg {
+  width: 100%;
+  height: 100%;
+  fill: var(--color-watermark);
+  display: block;
+  overflow: visible;
+}
+
+/* Zona 3: Slogan (Y: 59.44% do 67.20%, X: 7.49%) */
+.zone-slogan {
+  position: absolute;
+  top: 59.44%;
+  left: 7.49%;
+  right: 7.49%;
+  z-index: 5;
+}
+
+.slogan-text {
+  font-family: var(--font-grotesk);
+  font-size: clamp(1.15rem, 5.0cqi, 2.35rem);
+  font-weight: 900;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.slogan-text span {
+  display: block;
+}
+
+/* Separator linije 1 i 2 (Y: 71.35% i 86.84%) */
+.card-rule {
+  position: absolute;
+  border: none;
+  height: 1.8px;
+  background-color: var(--color-ink);
+  opacity: 0.95;
+  margin: 0;
+  z-index: 5;
+}
+
+#el-rule-1 {
+  top: 71.35%;
+  left: 4.92%;
+  width: 89.59%;
+}
+
+#el-rule-2 {
+  top: 86.84%;
+  left: 4.52%;
+  width: 89.59%;
+}
+
+/* Zona 4: Službeni institucionalni logotip (Y: 75.86% do 82.78%, X: 9.73% do 87.70%) */
+.zone-institution {
+  position: absolute;
+  top: 75.86%;
+  left: 9.73%;
+  width: 77.97%;
+  height: 6.92%;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+}
+
+.official-logo {
+  width: 100%;
+  height: 100%;
+  fill: var(--color-ink);
+  display: block;
+}
+
+#logo-text {
+  clip-path: inset(0 0% 0 0);
+}
+
+/* Zona 5: Dekan potpis (Y: 90.74% do 95.37%, X: 6.69%) */
+.zone-dekan {
+  position: absolute;
+  top: 90.74%;
+  left: 6.69%;
+  right: 6.69%;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+}
+
+.dekan-title {
+  font-family: var(--font-grotesk);
+  font-size: clamp(0.9rem, 3.6cqi, 1.55rem);
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--color-ink);
+}
+
+.dekan-name {
+  font-family: var(--font-grotesk);
+  font-size: clamp(0.9rem, 3.6cqi, 1.55rem);
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--color-ink);
+  margin-top: 0.15rem;
+}
+
+/* --------------------------------------------------------------------------
+   Motion Stage & Dynamic Animating Overlays
+   -------------------------------------------------------------------------- */
+.motion-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 25;
+}
+
+.fragments-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.fragment-item {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  width: clamp(160px, 34cqi, 280px);
+  aspect-ratio: 95 / 67;
+  transform-origin: center center;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.fragment-item svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+/* Central assembling symbol (Exact official brand vector) */
+.central-symbol-wrap {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  width: clamp(240px, 62%, 360px);
+  aspect-ratio: 260.42 / 67.13;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  will-change: transform, opacity;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.central-symbol-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  fill: var(--color-ink);
+  overflow: visible;
+}
+
+#piece-left, #piece-center, #piece-right,
+#wm-left, #wm-center, #wm-right {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+
+/* --------------------------------------------------------------------------
+   Responzivnost za male ekrane
+   -------------------------------------------------------------------------- */
+@media (max-height: 720px) {
+  .app-header {
+    top: 6px;
+  }
+  .viewport-canvas {
+    padding-top: 42px;
+    padding-bottom: 6px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Prefers Reduced Motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .fragment-item {
+    display: none !important;
+  }
+}
