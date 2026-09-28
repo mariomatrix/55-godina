@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prijedlog 5: Izometrijsko rasklapanje volumena</title>
+  <style>
+    @font-face {
+      font-family: 'FKGroteskMono';
+      src: url('FKGroteskMonoTrial-Regular.otf') format('opentype');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'FKGroteskMono';
+      src: url('FKGroteskMonoTrial-Medium.otf') format('opentype');
+      font-weight: 500;
+    }
+    @font-face {
+      font-family: 'FKGroteskMono';
+      src: url('FKGroteskMonoTrial-Bold.otf') format('opentype');
+      font-weight: 700;
+    }
+
+    :root {
+      --bg-dark: #0a0c10;
+      --accent: #ffd500;
+      --accent-light: #ffea75;
+      --accent-dark: #ccaa00;
+      --accent-darker: #997f00;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: #e6edf3;
+      font-family: 'FKGroteskMono', monospace, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.15rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #fff;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    p.subtitle {
+      font-size: 0.78rem;
+      color: #8b949e;
+      letter-spacing: 0.05em;
+    }
+
+    /* 3D Scene Viewport */
+    .viewport {
+      position: relative;
+      perspective: 1400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    /* The outer frame of the card (aspect ratio 1748 / 2485) */
+    .card-frame {
+      position: relative;
+      width: min(88vw, 440px);
+      aspect-ratio: 1748 / 2485;
+      background: #14171d;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 35px 80px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      transform-style: preserve-3d;
+    }
+
+    .card-base {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, #1e222a 0%, #101217 100%);
+      transition: background 0.3s ease;
+    }
+
+    .card-frame.light-base .card-base {
+      background: radial-gradient(circle at 50% 50%, #f4f1ea 0%, #ded9cf 100%);
+    }
+
+    .grid-lines {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 24px 24px;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .card-frame.light-base .grid-lines {
+      background-image: 
+        linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+    }
+
+    /* HUD Axis and Technical Dimension Markers */
+    .technical-hud {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      opacity: 0.5;
+      color: #8b949e;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px;
+    }
+
+    .hud-top {
+      display: flex;
+      justify-content: space-between;
+    }
+    .hud-bottom {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* 3D Isometric Stage inside the card */
+    .stage-3d {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    /* The Unfolding Container */
+    .unfold-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    /* Faces for Mode 1: Isometric Tectonic Net (Tri-Axial / Orthogonal Unfold) */
+    .face {
+      position: absolute;
+      backface-visibility: hidden;
+      will-change: transform, opacity, clip-path;
+      box-sizing: border-box;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    /* Solid Finished Flood Layer */
+    .finished-flood {
+      position: absolute;
+      inset: 0;
+      background-color: var(--accent);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Control Panel */
+    .controls-panel {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: min(92vw, 560px);
+      background: rgba(22, 26, 34, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 16px 20px;
+    }
+
+    .btn-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: #21262d;
+      color: #f0f6fc;
+      border: 1px solid #30363d;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-weight: 500;
+    }
+
+    button:hover {
+      background: #30363d;
+      border-color: #8b949e;
+      transform: translateY(-1px);
+    }
+
+    button.primary {
+      background: #ffd500;
+      color: #000;
+      border-color: #ffd500;
+      font-weight: 700;
+    }
+    button.primary:hover {
+      background: #ffdf33;
+      box-shadow: 0 0 12px rgba(255, 213, 0, 0.4);
+    }
+
+    .palette-chips {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .chip {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .chip:hover {
+      transform: scale(1.15);
+    }
+    .chip.active {
+      border-color: #fff;
+      transform: scale(1.2);
+    }
+
+    .options-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #8b949e;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    select {
+      background: #161b22;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-family: inherit;
+      font-size: 11px;
+    }
+  </style>
+  <script src="vendor/gsap.min.js"></script>
+</head>
+<body>
+
+  <header>
+    <h1>Prijedlog 5: Rasklapanje volumena</h1>
+    <p class="subtitle">Izometrijska maketa koja se kinetički rasklapa u 2D prostor &bull; Znanje koje mijenja prostor</p>
+  </header>
+
+  <div class="viewport">
+    <div class="card-frame" id="cardFrame">
+      <div class="card-base"></div>
+      <div class="grid-lines"></div>
+
+      <!-- Technical Blueprint HUD -->
+      <div class="technical-hud" id="techHud">
+        <div class="hud-top">
+          <span>AXONOMETRIC: ISO_30°</span>
+          <span>VOLUME: 1000m³ &rarr; 2D PLANE</span>
+        </div>
+        <div class="hud-bottom">
+          <span>SCALE: 1:100 ARCH_MODEL</span>
+          <span>FGAG SPLIT 1971-2026</span>
+        </div>
+      </div>
+
+      <!-- 3D Transform Stage -->
+      <div class="stage-3d" id="stage3d">
+        <div class="unfold-wrapper" id="unfoldWrapper">
+          <!-- Dynamically populated by JS according to selected mode -->
+        </div>
+      </div>
+
+      <!-- Final Solid Unified Color Plane -->
+      <div class="finished-flood" id="finishedFlood"></div>
+    </div>
+  </div>
+
+  <div class="controls-panel">
+    <div class="btn-row">
+      <button class="primary" id="btnReplay">&#9654; RASKLOPI VOLUMEN</button>
+      <button id="btnSlow">USPORENO (0.25x)</button>
+      <button id="btnToggleBase">PROMIJENI PODLOGU (Tamna/Svijetla)</button>
+    </div>
+
+    <div class="btn-row">
+      <span style="font-size: 11px; color: #8b949e; margin-right: 6px;">Paleta:</span>
+      <div class="palette-chips" id="paletteChips"></div>
+    </div>
+
+    <div class="options-row">
+      <label>
+        Tip rasklapanja:
+        <select id="selModel">
+          <option value="origami">Arhitektonska maketa (Origami net rasklapanje)</option>
+          <option value="axonometric">Aksonometrijski kubus (3-plohe projekcija)</option>
+          <option value="tectonic">Tektonski rasjed (Modularne plohe u kaskadi)</option>
+        </select>
+      </label>
+      <span id="timingStatus">Trajanje: 0.85s</span>
+    </div>
+  </div>
+
+  <script>
+    const PALETTES = [
+      { id: 'P01', name: 'Jubilejska žuta', color: '#ffd500', isDark: false },
+      { id: 'P02', name: 'Crna / ugljen', color: '#16181d', isDark: true },
+      { id: 'P03', name: 'Crvena', color: '#e63946', isDark: true },
+      { id: 'P04', name: 'Zelena', color: '#2a9d8f', isDark: true },
+      { id: 'P05', name: 'Magenta', color: '#d81159', isDark: true },
+      { id: 'P06', name: 'Svijetloplava', color: '#4cc9f0', isDark: false },
+      { id: 'P07', name: 'Navy plava', color: '#1d3557', isDark: true }
+    ];
+
+    let currentPalette = PALETTES[0];
+    let timeScale = 1.0;
+    let mainTl = null;
+
+    const cardFrame = document.getElementById('cardFrame');
+    const stage3d = document.getElementById('stage3d');
+    const unfoldWrapper = document.getElementById('unfoldWrapper');
+    const finishedFlood = document.getElementById('finishedFlood');
+    const techHud = document.getElementById('techHud');
+    const selModel = document.getElementById('selModel');
+
+    // Build palette chips
+    const chipsContainer = document.getElementById('paletteChips');
+    PALETTES.forEach((p, idx) => {
+      const chip = document.createElement('div');
+      chip.className = 'chip' + (idx === 0 ? ' active' : '');
+      chip.style.backgroundColor = p.color;
+      chip.title = `${p.id}: ${p.name}`;
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        setPalette(p);
+      });
+      chipsContainer.appendChild(chip);
+    });
+
+    function setPalette(p) {
+      currentPalette = p;
+      document.documentElement.style.setProperty('--accent', p.color);
+      // Generate shaded tones for 3D faces
+      document.documentElement.style.setProperty('--accent-light', lightenDarken(p.color, 25));
+      document.documentElement.style.setProperty('--accent-dark', lightenDarken(p.color, -25));
+      document.documentElement.style.setProperty('--accent-darker', lightenDarken(p.color, -45));
+      playUnfold();
+    }
+
+    function lightenDarken(col, amt) {
+      let usePound = false;
+      if (col[0] == "#") {
+        col = col.slice(1);
+        usePound = true;
+      }
+      if (col.length === 3) {
+        col = col.split('').map(c => c + c).join('');
+      }
+      let num = parseInt(col, 16);
+      let r = (num >> 16) + amt;
+      let g = ((num >> 8) & 0x00FF) + amt;
+      let b = (num & 0x0000FF) + amt;
+      r = Math.max(0, Math.min(255, r));
+      g = Math.max(0, Math.min(255, g));
+      b = Math.max(0, Math.min(255, b));
+      return (usePound ? "#" : "") + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+
+    setPalette(currentPalette);
+
+    document.getElementById('btnToggleBase').addEventListener('click', () => {
+      cardFrame.classList.toggle('light-base');
+      playUnfold();
+    });
+
+    const btnSlow = document.getElementById('btnSlow');
+    btnSlow.addEventListener('click', () => {
+      if (timeScale === 1.0) {
+        timeScale = 0.25;
+        btnSlow.textContent = 'NORMALNA BRZINA (1.0x)';
+        btnSlow.style.borderColor = '#ffd500';
+      } else {
+        timeScale = 1.0;
+        btnSlow.textContent = 'USPORENO (0.25x)';
+        btnSlow.style.borderColor = '#30363d';
+      }
+      playUnfold();
+    });
+
+    selModel.addEventListener('change', () => playUnfold());
+    document.getElementById('btnReplay').addEventListener('click', () => playUnfold());
+
+    /* ================================================================
+       BUILD & ANIMATE: 3 ARCHITECTURAL MODES
+       ================================================================ */
+
+    function playUnfold() {
+      if (mainTl) mainTl.kill();
+
+      unfoldWrapper.innerHTML = '';
+      gsap.set(finishedFlood, { opacity: 0 });
+      gsap.set(techHud, { opacity: 0.6 });
+
+      const mode = selModel.value;
+      mainTl = gsap.timeline({ timeScale: timeScale });
+
+      if (mode === 'origami') {
+        buildOrigamiNet(mainTl);
+      } else if (mode === 'axonometric') {
+        buildAxonometricCube(mainTl);
+      } else {
+        buildTectonicCascade(mainTl);
+      }
+    }
+
+    /* -------------------------------------------------------------
+       MODE 1: ORIGAMI ARCHITECTURAL NET
+       A 3D cube model unfolding its flaps flat to form the greeting card.
+       ------------------------------------------------------------- */
+    function buildOrigamiNet(tl) {
+      // Dimensions of the center base face
+      const w = 200;
+      const h = 284; // proportional to 1748 x 2485
+      const depth = 90;
+
+      // Base face (center)
+      const baseFace = createFace(w, h, 'var(--accent)', 'Centar');
+      baseFace.style.left = `calc(50% - ${w/2}px)`;
+      baseFace.style.top = `calc(50% - ${h/2}px)`;
+
+      // Flap Top
+      const flapTop = createFace(w, depth, 'var(--accent-light)', 'Top');
+      flapTop.style.left = `calc(50% - ${w/2}px)`;
+      flapTop.style.top = `calc(50% - ${h/2}px - ${depth}px)`;
+      flapTop.style.transformOrigin = 'bottom center';
+
+      // Flap Bottom
+      const flapBottom = createFace(w, depth, 'var(--accent-dark)', 'Bottom');
+      flapBottom.style.left = `calc(50% - ${w/2}px)`;
+      flapBottom.style.top = `calc(50% + ${h/2}px)`;
+      flapBottom.style.transformOrigin = 'top center';
+
+      // Flap Left
+      const flapLeft = createFace(depth, h, 'var(--accent-dark)', 'Left');
+      flapLeft.style.left = `calc(50% - ${w/2}px - ${depth}px)`;
+      flapLeft.style.top = `calc(50% - ${h/2}px)`;
+      flapLeft.style.transformOrigin = 'right center';
+
+      // Flap Right
+      const flapRight = createFace(depth, h, 'var(--accent-darker)', 'Right');
+      flapRight.style.left = `calc(50% + ${w/2}px)`;
+      flapRight.style.top = `calc(50% - ${h/2}px)`;
+      flapRight.style.transformOrigin = 'left center';
+
+      // Cover flap (lid)
+      const flapLid = createFace(w, h, 'var(--accent-light)', 'Lid');
+      flapLid.style.left = `calc(50% - ${w/2}px)`;
+      flapLid.style.top = `calc(50% - ${h/2}px - ${depth + h}px)`;
+      flapLid.style.transformOrigin = 'bottom center';
+
+      unfoldWrapper.appendChild(baseFace);
+      unfoldWrapper.appendChild(flapTop);
+      unfoldWrapper.appendChild(flapBottom);
+      unfoldWrapper.appendChild(flapLeft);
+      unfoldWrapper.appendChild(flapRight);
+      unfoldWrapper.appendChild(flapLid);
+
+      // Initial state: Cube assembled in 3D Isometric View
+      gsap.set(stage3d, {
+        rotationX: 55,
+        rotationZ: -45,
+        scale: 0.72,
+        z: -100
+      });
+
+      // Folded 90 degrees upward into a 3D box
+      gsap.set(flapTop, { rotationX: -90 });
+      gsap.set(flapBottom, { rotationX: 90 });
+      gsap.set(flapLeft, { rotationY: 90 });
+      gsap.set(flapRight, { rotationY: -90 });
+      gsap.set(flapLid, { rotationX: -90 });
+
+      // TIMELINE EXECUTION
+      tl
+        // 0.00s - 0.18s: Suspended in 3D isometric view with subtle breathing float
+        .to(stage3d, {
+          z: 20,
+          scale: 0.78,
+          duration: 0.20,
+          ease: 'power1.out'
+        }, 0)
+
+        // 0.20s: The Lid opens
+        .to(flapLid, {
+          rotationX: 0,
+          duration: 0.28,
+          ease: 'power3.inOut'
+        }, 0.18)
+
+        // 0.26s: Side walls unfold flat (90° -> 0°)
+        .to([flapTop, flapBottom], {
+          rotationX: 0,
+          duration: 0.32,
+          ease: 'power3.out',
+          stagger: 0.03
+        }, 0.26)
+        .to([flapLeft, flapRight], {
+          rotationY: 0,
+          duration: 0.32,
+          ease: 'power3.out',
+          stagger: 0.03
+        }, 0.28)
+
+        // Camera rotates from 3D isometric to direct frontal orthographic (0°, 0°)
+        .to(stage3d, {
+          rotationX: 0,
+          rotationZ: 0,
+          scale: 1.15,
+          z: 0,
+          duration: 0.44,
+          ease: 'expo.inOut'
+        }, 0.26)
+
+        // Color homogenizes into uniform brand tone
+        .to([baseFace, flapTop, flapBottom, flapLeft, flapRight, flapLid], {
+          backgroundColor: 'var(--accent)',
+          borderColor: 'transparent',
+          duration: 0.22,
+          ease: 'power2.out'
+        }, 0.50)
+
+        // Expand the combined flat surface to fill entire card boundaries
+        .to(unfoldWrapper, {
+          scale: 1.85,
+          duration: 0.30,
+          ease: 'power3.out'
+        }, 0.55)
+
+        // Final solid flood takes over seamlessly
+        .to(finishedFlood, {
+          opacity: 1,
+          duration: 0.12,
+          ease: 'power1.out'
+        }, 0.72)
+        .to(techHud, {
+          opacity: 0,
+          duration: 0.15
+        }, 0.70);
+    }
+
+    /* -------------------------------------------------------------
+       MODE 2: AXONOMETRIC CUBE (3-PLOHNA PROJEKCIJA)
+       Pure architectural axonometry: Top, Left, Right faces that
+       flatten and fuse directly onto the 2D sheet.
+       ------------------------------------------------------------- */
+    function buildAxonometricCube(tl) {
+      const size = 220;
+
+      // Container for isometric block
+      const isoBlock = document.createElement('div');
+      isoBlock.style.position = 'absolute';
+      isoBlock.style.left = '50%';
+      isoBlock.style.top = '45%';
+      isoBlock.style.width = '0';
+      isoBlock.style.height = '0';
+      isoBlock.style.transformStyle = 'preserve-3d';
+      unfoldWrapper.appendChild(isoBlock);
+
+      // Face Top
+      const faceTop = document.createElement('div');
+      faceTop.className = 'face';
+      faceTop.style.width = `${size}px`;
+      faceTop.style.height = `${size}px`;
+      faceTop.style.backgroundColor = 'var(--accent-light)';
+      faceTop.style.position = 'absolute';
+      faceTop.style.left = `${-size/2}px`;
+      faceTop.style.top = `${-size/2}px`;
+      faceTop.style.transformOrigin = 'center center';
+      faceTop.style.boxShadow = 'inset 0 0 0 1px rgba(0,0,0,0.2)';
+      isoBlock.appendChild(faceTop);
+
+      // Face Left
+      const faceLeft = document.createElement('div');
+      faceLeft.className = 'face';
+      faceLeft.style.width = `${size}px`;
+      faceLeft.style.height = `${size}px`;
+      faceLeft.style.backgroundColor = 'var(--accent-dark)';
+      faceLeft.style.position = 'absolute';
+      faceLeft.style.left = `${-size/2}px`;
+      faceLeft.style.top = `${-size/2}px`;
+      faceLeft.style.transformOrigin = 'center center';
+      faceLeft.style.boxShadow = 'inset 0 0 0 1px rgba(0,0,0,0.2)';
+      isoBlock.appendChild(faceLeft);
+
+      // Face Right
+      const faceRight = document.createElement('div');
+      faceRight.className = 'face';
+      faceRight.style.width = `${size}px`;
+      faceRight.style.height = `${size}px`;
+      faceRight.style.backgroundColor = 'var(--accent)';
+      faceRight.style.position = 'absolute';
+      faceRight.style.left = `${-size/2}px`;
+      faceRight.style.top = `${-size/2}px`;
+      faceRight.style.transformOrigin = 'center center';
+      faceRight.style.boxShadow = 'inset 0 0 0 1px rgba(0,0,0,0.2)';
+      isoBlock.appendChild(faceRight);
+
+      // Position in 3D Isometric Space
+      gsap.set(stage3d, { rotationX: 0, rotationZ: 0, scale: 1 });
+
+      // Isometric transformations
+      gsap.set(faceTop, {
+        rotationZ: -45,
+        rotationX: 60,
+        y: -size * 0.70,
+        scaleY: 1
+      });
+      gsap.set(faceLeft, {
+        rotationZ: 15,
+        rotationY: -60,
+        x: -size * 0.50,
+        y: size * 0.15
+      });
+      gsap.set(faceRight, {
+        rotationZ: -15,
+        rotationY: 60,
+        x: size * 0.50,
+        y: size * 0.15
+      });
+
+      // TIMELINE EXECUTION
+      tl
+        // 0.00s - 0.20s: Hover with technical crosshair precision
+        .to(isoBlock, {
+          y: -10,
+          duration: 0.20,
+          ease: 'power2.out'
+        }, 0)
+
+        // 0.20s: The 3 planes explode slightly outward, unlocking the structure
+        .to(faceTop, { y: -size * 0.95, duration: 0.18, ease: 'back.out(2)' }, 0.20)
+        .to(faceLeft, { x: -size * 0.75, y: size * 0.30, duration: 0.18, ease: 'back.out(2)' }, 0.20)
+        .to(faceRight, { x: size * 0.75, y: size * 0.30, duration: 0.18, ease: 'back.out(2)' }, 0.20)
+
+        // 0.38s: Rapid kinetic flattening — all faces rotate flat to 0° onto the card
+        .to([faceTop, faceLeft, faceRight], {
+          rotationX: 0,
+          rotationY: 0,
+          rotationZ: 0,
+          x: 0,
+          y: 0,
+          scale: 1.8,
+          duration: 0.35,
+          ease: 'expo.out'
+        }, 0.38)
+
+        // Faces expand and merge together
+        .to([faceTop, faceLeft, faceRight], {
+          backgroundColor: 'var(--accent)',
+          borderColor: 'transparent',
+          boxShadow: 'none',
+          scale: 3.2,
+          duration: 0.25,
+          ease: 'power2.inOut'
+        }, 0.52)
+
+        // Full flood coverage
+        .to(finishedFlood, {
+          opacity: 1,
+          duration: 0.12
+        }, 0.72)
+        .to(techHud, { opacity: 0, duration: 0.15 }, 0.70);
+    }
+
+    /* -------------------------------------------------------------
+       MODE 3: TECTONIC CASCADE (MODULAR SLABS FLIPPING)
+       Architectural slabs unfolding like stepped concrete terraces.
+       ------------------------------------------------------------- */
+    function buildTectonicCascade(tl) {
+      const slabCount = 6;
+      const slabH = 100 / slabCount;
+
+      const slabs = [];
+      for (let i = 0; i < slabCount; i++) {
+        const slab = document.createElement('div');
+        slab.className = 'face';
+        slab.style.width = '100%';
+        slab.style.height = `${slabH + 0.5}%`;
+        slab.style.top = `${i * slabH}%`;
+        slab.style.left = '0';
+        slab.style.backgroundColor = (i % 2 === 0) ? 'var(--accent-light)' : 'var(--accent)';
+        slab.style.transformOrigin = (i % 2 === 0) ? 'top center' : 'bottom center';
+        slab.style.border = '1px solid rgba(0,0,0,0.1)';
+        unfoldWrapper.appendChild(slab);
+        slabs.push(slab);
+      }
+
+      // Initial state: Folded like an accordion in 3D
+      gsap.set(stage3d, { rotationX: 45, rotationZ: -15, scale: 0.82 });
+      slabs.forEach((s, idx) => {
+        gsap.set(s, {
+          rotationX: (idx % 2 === 0) ? -75 : 75,
+          opacity: 0.85
+        });
+      });
+
+      tl
+        // 0.20s: Cascading accordion snap flat
+        .to(slabs, {
+          rotationX: 0,
+          opacity: 1,
+          duration: 0.42,
+          ease: 'back.out(1.8)',
+          stagger: 0.05
+        }, 0.20)
+
+        // Camera aligns to straight 2D
+        .to(stage3d, {
+          rotationX: 0,
+          rotationZ: 0,
+          scale: 1,
+          duration: 0.45,
+          ease: 'power3.inOut'
+        }, 0.22)
+
+        // Harmonize color
+        .to(slabs, {
+          backgroundColor: 'var(--accent)',
+          borderColor: 'transparent',
+          duration: 0.20
+        }, 0.55)
+
+        .to(finishedFlood, { opacity: 1, duration: 0.12 }, 0.70)
+        .to(techHud, { opacity: 0, duration: 0.15 }, 0.68);
+    }
+
+    function createFace(width, height, bg, label) {
+      const el = document.createElement('div');
+      el.className = 'face';
+      el.style.width = `${width}px`;
+      el.style.height = `${height}px`;
+      el.style.backgroundColor = bg;
+      el.style.boxShadow = 'inset 0 0 0 1px rgba(0,0,0,0.12)';
+      return el;
+    }
+
+    // Auto-run on load
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(playUnfold, 300);
+    });
+  </script>
+</body>
+</html>
