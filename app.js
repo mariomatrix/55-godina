@@ -489,6 +489,7 @@
     officialLogo: document.getElementById('official-logo-svg'),
     dekanZone: document.getElementById('el-dekan-zone'),
     dekanTitle: document.getElementById('el-dekan-title'),
+    dekanName: document.getElementById('el-dekan-name'),
     seedBadge: document.getElementById('seed-badge'),
     replayBtn: document.getElementById('replay-btn'),
     motifsTracker: document.getElementById('motifs-tracker'),
