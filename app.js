@@ -205,7 +205,7 @@
     // 2. Ako je vrećica prazna ili neispravna, stvori novi promiješani krug (Fisher-Yates)
     if (!Array.isArray(bag) || bag.length === 0) {
       bag = OFFICIAL_PALETTES.map(p => p.id);
-      
+
       for (let i = bag.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         const temp = bag[i];
@@ -489,9 +489,13 @@
     officialLogo: document.getElementById('official-logo-svg'),
     dekanZone: document.getElementById('el-dekan-zone'),
     dekanTitle: document.getElementById('el-dekan-title'),
-    dekanName: document.getElementById('el-dekan-name'),
     seedBadge: document.getElementById('seed-badge'),
-    replayBtn: document.getElementById('replay-btn')
+    replayBtn: document.getElementById('replay-btn'),
+    motifsTracker: document.getElementById('motifs-tracker'),
+    motifsCount: document.getElementById('motifs-count'),
+    motifDots: document.querySelectorAll('.motif-dot'),
+    counterBadge: document.getElementById('global-counter-badge'),
+    counterValue: document.getElementById('counter-value')
   };
 
   function createFragments(config) {
@@ -503,7 +507,7 @@
       el.className = `fragment-item ${frag.sizeClass}`;
       el.id = frag.id;
       el.innerHTML = SVG_SHAPES[frag.shapeType];
-      
+
       const svg = el.querySelector('svg');
       if (svg) {
         svg.style.fill = frag.color;
@@ -680,18 +684,18 @@
       duration: 0.18,
       ease: 'power2.out'
     }, T0 + 0.02)
-    .to([DOM.crossH, DOM.crossV], {
-      scale: 1,
-      opacity: 0.95,
-      duration: 0.15,
-      ease: 'power3.out'
-    }, T0 + 0.04)
-    .to(DOM.seedDot, {
-      scale: 1,
-      duration: 0.16,
-      ease: 'back.out(3)',
-      boxShadow: `0 0 28px ${config.palette.bg}`
-    }, T0 + 0.06);
+      .to([DOM.crossH, DOM.crossV], {
+        scale: 1,
+        opacity: 0.95,
+        duration: 0.15,
+        ease: 'power3.out'
+      }, T0 + 0.04)
+      .to(DOM.seedDot, {
+        scale: 1,
+        duration: 0.16,
+        ease: 'back.out(3)',
+        boxShadow: `0 0 28px ${config.palette.bg}`
+      }, T0 + 0.06);
 
     // -----------------------------------------------------------------------
     // FAZA 2: "ZNANJE KOJE MIJENJA PROSTOR" - DETONACIJA & BIG BANG (T0 + 0.22s)
@@ -959,12 +963,111 @@
   }
 
   // =========================================================================
-  // 7. KONTROLNA LOGIKA & UPRAVLJANJE
+  // 7. KONTROLNA LOGIKA & UPRAVLJANJE (MOTIVI & BROJAČ IZVOĐENJA)
   // =========================================================================
+
+  const STORAGE_KEY_MOTIFS = 'fgag_unlocked_motifs';
+  const STORAGE_KEY_COUNTER_SIM = 'fgag_global_counter_sim';
 
   let activeConfig = null;
   let activeTimeline = null;
   let activeFragmentElements = [];
+
+  function getUnlockedMotifs() {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY_MOTIFS);
+      return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function updateMotifsTracker(activePaletteId) {
+    if (!DOM.motifsTracker) return;
+
+    let unlocked = getUnlockedMotifs();
+    if (activePaletteId && !unlocked.includes(activePaletteId)) {
+      unlocked.push(activePaletteId);
+      try {
+        localStorage.setItem(STORAGE_KEY_MOTIFS, JSON.stringify(unlocked));
+      } catch (e) { }
+    }
+
+    const count = unlocked.length;
+    if (DOM.motifsCount) {
+      DOM.motifsCount.textContent = count === 7 ? '' : `${count}/7`;
+    }
+
+    if (count === 7) {
+      DOM.motifsTracker.classList.add('all-unlocked');
+      DOM.motifsTracker.setAttribute('title', 'Čestitamo! Otključali ste svih 7 službenih motiva FGAG-a.');
+    } else {
+      DOM.motifsTracker.classList.remove('all-unlocked');
+      DOM.motifsTracker.setAttribute('title', `Zbirka motiva: ${count} od 7 otključano`);
+    }
+
+    if (DOM.motifDots) {
+      DOM.motifDots.forEach((dot) => {
+        const pId = dot.getAttribute('data-palette');
+        const isUnlocked = unlocked.includes(pId);
+        const isActive = pId === activePaletteId;
+
+        dot.classList.toggle('unlocked', isUnlocked);
+        dot.classList.toggle('active', isActive);
+      });
+    }
+  }
+
+  function formatCounterNumber(num) {
+    const padded = String(Math.max(1, num)).padStart(6, '0');
+    const thousands = padded.slice(0, 3);
+    const units = padded.slice(3);
+    return `#${thousands}.${units}`;
+  }
+
+  function renderCounterValue(num) {
+    if (!DOM.counterValue) return;
+    DOM.counterValue.textContent = formatCounterNumber(num);
+    DOM.counterValue.classList.remove('bump');
+    void DOM.counterValue.offsetWidth;
+    DOM.counterValue.classList.add('bump');
+  }
+
+  async function recordExecutionCount() {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+
+      const res = await fetch('/api/counter/hit', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        if (typeof data.total === 'number') {
+          renderCounterValue(data.total);
+          try { localStorage.setItem(STORAGE_KEY_COUNTER_SIM, String(data.total)); } catch (e) { }
+          return;
+        }
+      }
+    } catch (err) {
+      // API nije dostupan (statički GitHub Pages ili lokalno bez poslužitelja)
+    }
+
+    // Automatski lokalni fallback
+    try {
+      let sim = parseInt(localStorage.getItem(STORAGE_KEY_COUNTER_SIM) || '1055', 10);
+      if (isNaN(sim)) sim = 1055;
+      sim += 1;
+      localStorage.setItem(STORAGE_KEY_COUNTER_SIM, String(sim));
+      renderCounterValue(sim);
+    } catch (e) {
+      renderCounterValue(1055);
+    }
+  }
 
   function initializeAndPlay(reuseExisting = false) {
     if (activeTimeline) {
@@ -987,6 +1090,9 @@
       activeConfig.geom.name,
       activeConfig.seed
     );
+
+    updateMotifsTracker(activeConfig.palette.id);
+    recordExecutionCount();
 
     activeTimeline = buildTimeline(activeConfig, activeFragmentElements);
     activeTimeline.play(0);
@@ -1023,6 +1129,10 @@
 
     activeFragmentElements = createFragments(activeConfig);
     setInitialState(activeConfig, activeFragmentElements);
+
+    updateMotifsTracker(activeConfig.palette.id);
+    recordExecutionCount();
+
     activeTimeline = buildTimeline(activeConfig, activeFragmentElements);
     activeTimeline.play(0);
   }
@@ -1095,6 +1205,7 @@
     activeConfig = createConfiguration(immediateSeed);
     activeFragmentElements = createFragments(activeConfig);
     setInitialState(activeConfig, activeFragmentElements);
+    updateMotifsTracker(activeConfig.palette.id);
   } catch (err) {
     console.error('Init zero-state err:', err);
   }
@@ -1103,19 +1214,19 @@
     startWhenVisible();
   });
 
-  window.seekTo = function(t) {
+  window.seekTo = function (t) {
     if (activeTimeline) {
       activeTimeline.pause(t);
     }
   };
 
-  window.playAnim = function() {
+  window.playAnim = function () {
     if (activeTimeline) {
       activeTimeline.play();
     }
   };
 
-  window.playNewVariation = function() {
+  window.playNewVariation = function () {
     playNewVariation();
   };
 

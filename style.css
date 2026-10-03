@@ -46,13 +46,16 @@ body {
 /* --------------------------------------------------------------------------
    App Header & Floating Controls
    -------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------
+   App Header (Gore: Samo brending i gumb Ponovi)
+   -------------------------------------------------------------------------- */
 .app-header {
   position: fixed;
   top: 14px;
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - 28px);
-  max-width: 680px;
+  max-width: 900px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -63,30 +66,24 @@ body {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 8px;
 }
 
 .brand-pill {
   background: #f7b512;
   color: #373435;
+  font-family: var(--font-grotesk);
   font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.08em;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 999px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  user-select: none;
 }
 
-.seed-pill {
-  background: rgba(25, 27, 32, 0.85);
-  color: #a0a6b4;
-  font-size: 0.68rem;
-  font-weight: 400;
-  letter-spacing: 0.04em;
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
+.header-right {
+  display: flex;
+  align-items: center;
 }
 
 .replay-btn {
@@ -125,6 +122,156 @@ body {
 }
 
 /* --------------------------------------------------------------------------
+   App Footer (Dolje: Motivi, globalni brojač i telemetrija)
+   -------------------------------------------------------------------------- */
+.app-footer {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 28px);
+  max-width: 900px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  pointer-events: auto;
+  gap: 12px;
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.motifs-tracker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(25, 27, 32, 0.90);
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
+}
+
+.motifs-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.motif-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  background: transparent;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.motif-dot[data-palette="P01"] { --motif-c: #FDB913; }
+.motif-dot[data-palette="P02"] { --motif-c: #FFFFFF; }
+.motif-dot[data-palette="P03"] { --motif-c: #EF4E52; }
+.motif-dot[data-palette="P04"] { --motif-c: #6AC17B; }
+.motif-dot[data-palette="P05"] { --motif-c: #EF5CA1; }
+.motif-dot[data-palette="P06"] { --motif-c: #99BCCB; }
+.motif-dot[data-palette="P07"] { --motif-c: #7D7AC8; }
+
+.motif-dot.unlocked {
+  background: var(--motif-c);
+  border-color: var(--motif-c);
+  box-shadow: 0 0 6px var(--motif-c);
+}
+
+.motif-dot.active {
+  transform: scale(1.35);
+  box-shadow: 0 0 10px var(--motif-c);
+}
+
+.motifs-count {
+  font-family: var(--font-grotesk);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #a0a6b4;
+  font-variant-numeric: tabular-nums;
+}
+
+.motifs-tracker.all-unlocked {
+  border-color: rgba(247, 181, 18, 0.6);
+  box-shadow: 0 0 14px rgba(247, 181, 18, 0.25);
+}
+
+.motifs-tracker.all-unlocked .motifs-count {
+  color: #f7b512;
+}
+
+.counter-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(25, 27, 32, 0.90);
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  user-select: none;
+}
+
+.counter-label {
+  font-family: var(--font-grotesk);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #808695;
+  text-transform: uppercase;
+}
+
+.counter-value {
+  font-family: var(--font-grotesk);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #f7b512;
+  font-variant-numeric: tabular-nums;
+  transition: transform 0.2s ease;
+}
+
+.counter-value.bump {
+  animation: counterBump 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes counterBump {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.25); color: #ffffff; }
+  100% { transform: scale(1); }
+}
+
+.seed-pill {
+  background: rgba(25, 27, 32, 0.90);
+  color: #a0a6b4;
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  user-select: none;
+}
+
+/* --------------------------------------------------------------------------
    Viewport & Card Stage
    -------------------------------------------------------------------------- */
 .viewport-canvas {
@@ -133,7 +280,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 50px 16px 16px;
+  padding: 58px 16px 58px;
 }
 
 .card-stage-wrapper {
@@ -149,7 +296,7 @@ body {
 /* Točan omjer 1748 : 2485 (1 : 1.4216) iz draft cestitke 1.png s prizvukom 70-ih */
 .greeting-card {
   position: relative;
-  height: min(calc(100dvh - 75px), 880px);
+  height: min(calc(100dvh - 120px), 880px);
   aspect-ratio: 1748 / 2485;
   max-width: 95vw;
   background-color: #12141a; /* Tamni tehnički ugljen kao polazna podloga */
@@ -537,9 +684,50 @@ body {
   .app-header {
     top: 6px;
   }
+  .app-footer {
+    bottom: 6px;
+  }
   .viewport-canvas {
     padding-top: 42px;
-    padding-bottom: 6px;
+    padding-bottom: 42px;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-header,
+  .app-footer {
+    width: calc(100% - 16px);
+  }
+  .app-header {
+    top: 8px;
+  }
+  .app-footer {
+    bottom: 8px;
+  }
+  .footer-left {
+    gap: 6px;
+  }
+  .seed-pill {
+    display: none;
+  }
+  .brand-pill {
+    padding: 5px 9px;
+    font-size: 0.65rem;
+  }
+  .motifs-tracker {
+    padding: 4px 8px;
+    gap: 6px;
+  }
+  .motif-dot {
+    width: 7.5px;
+    height: 7.5px;
+  }
+  .counter-badge {
+    padding: 4px 8px;
+  }
+  .replay-btn {
+    padding: 6px 12px;
+    font-size: 0.68rem;
   }
 }
 

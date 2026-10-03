@@ -10,15 +10,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=2.9">
+  <link rel="stylesheet" href="style.css?v=3.2">
   <script src="vendor/gsap.min.js"></script>
 </head>
 <body>
-  <!-- Floating App UI Header -->
+  <!-- Floating App UI Header (Gore: Samo brending i gumb Ponovi) -->
   <header class="app-header" id="app-header">
     <div class="header-left">
       <span class="brand-pill">FGAG SPLIT</span>
-      <span class="seed-pill" id="seed-badge">UTC: 2026-09-27 | P01</span>
     </div>
     <div class="header-right">
       <button class="replay-btn" id="replay-btn" aria-label="Ponovi animaciju">
@@ -185,6 +184,35 @@
     </div>
   </main>
 
-  <script src="app.js?v=2.9"></script>
+  <!-- Floating App UI Footer (Dolje: Motivi, globalni brojač i telemetrija) -->
+  <footer class="app-footer" id="app-footer">
+    <div class="footer-left">
+      <!-- Lokalna zbirka: 7 službenih motiva -->
+      <div class="motifs-tracker" id="motifs-tracker" title="Zbirka motiva: 7 službenih boja FGAG-a">
+        <div class="motifs-dots" id="motifs-dots" aria-label="Status motiva">
+          <span class="motif-dot" data-palette="P01" title="P01 Žuta"></span>
+          <span class="motif-dot" data-palette="P02" title="P02 Crna"></span>
+          <span class="motif-dot" data-palette="P03" title="P03 Crvena"></span>
+          <span class="motif-dot" data-palette="P04" title="P04 Zelena"></span>
+          <span class="motif-dot" data-palette="P05" title="P05 Magenta"></span>
+          <span class="motif-dot" data-palette="P06" title="P06 Plava"></span>
+          <span class="motif-dot" data-palette="P07" title="P07 Navy"></span>
+        </div>
+        <span class="motifs-count" id="motifs-count">1/7</span>
+      </div>
+
+      <!-- Globalni brojač ukupnih izvođenja -->
+      <div class="counter-badge" id="global-counter-badge" title="Ukupan broj izvođenja animacije">
+        <span class="counter-label">IZVEDBA</span>
+        <span class="counter-value" id="counter-value">#...</span>
+      </div>
+    </div>
+
+    <div class="footer-right">
+      <span class="seed-pill" id="seed-badge">2026-10-03 | P01</span>
+    </div>
+  </footer>
+
+  <script src="app.js?v=3.2"></script>
 </body>
 </html>
