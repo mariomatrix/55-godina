@@ -18,8 +18,8 @@ const HOST = process.env.HOST || '0.0.0.0';
 const DATA_DIR = path.join(__dirname, 'data');
 const COUNTER_FILE = path.join(DATA_DIR, 'counter.json');
 
-// Inicijalna vrijednost brojača (simbolika 55 godina: #001.055)
-const INITIAL_COUNT = 1055;
+// Inicijalna vrijednost brojača (zadano 0, prilagodljivo preko okruženja npr. INITIAL_COUNT=1055)
+const INITIAL_COUNT = parseInt(process.env.INITIAL_COUNT || '0', 10);
 
 // Osiguraj data direktorij
 if (!fs.existsSync(DATA_DIR)) {

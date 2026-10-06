@@ -1020,7 +1020,7 @@
   }
 
   function formatCounterNumber(num) {
-    const padded = String(Math.max(1, num)).padStart(6, '0');
+    const padded = String(Math.max(0, num)).padStart(6, '0');
     const thousands = padded.slice(0, 3);
     const units = padded.slice(3);
     return `#${thousands}.${units}`;
@@ -1060,13 +1060,13 @@
 
     // Automatski lokalni fallback
     try {
-      let sim = parseInt(localStorage.getItem(STORAGE_KEY_COUNTER_SIM) || '1055', 10);
-      if (isNaN(sim)) sim = 1055;
+      let sim = parseInt(localStorage.getItem(STORAGE_KEY_COUNTER_SIM) || '0', 10);
+      if (isNaN(sim)) sim = 0;
       sim += 1;
       localStorage.setItem(STORAGE_KEY_COUNTER_SIM, String(sim));
       renderCounterValue(sim);
     } catch (e) {
-      renderCounterValue(1055);
+      renderCounterValue(0);
     }
   }
 
