@@ -642,22 +642,22 @@ body {
 }
 
 .fragment-item.size-monumental {
-  width: clamp(220px, 48cqi, 360px);
+  width: clamp(140px, 30cqi, 220px);
   aspect-ratio: 95 / 67;
 }
 
 .fragment-item.size-large {
-  width: clamp(160px, 34cqi, 260px);
+  width: clamp(105px, 22cqi, 160px);
   aspect-ratio: 95 / 67;
 }
 
 .fragment-item.size-mid {
-  width: clamp(100px, 22cqi, 170px);
+  width: clamp(75px, 16cqi, 115px);
   aspect-ratio: 95 / 67;
 }
 
 .fragment-item.size-shard {
-  width: clamp(55px, 12cqi, 95px);
+  width: clamp(45px, 9cqi, 70px);
   aspect-ratio: 95 / 67;
 }
 
@@ -735,7 +735,7 @@ body {
    Prefers Reduced Motion
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
-  .fragment-item {
+  .shockwaves-svg {
     display: none !important;
   }
 }
